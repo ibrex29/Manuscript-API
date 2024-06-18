@@ -1,0 +1,163 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id      String           @id @default(uuid())
+  firstName String
+  lastName  String
+  password String
+  email    String    @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  createdBy          String    
+  updatedBy          String
+  roles    Role[]    @relation("UserRoles")
+  author   Author?
+  reviewer Reviewer?
+  editor   Editor?
+}
+
+model Editor {
+  id        String           @id @default(uuid())
+  userId    String           @unique
+  user      User          @relation(fields: [userId], references: [id])
+  editorManuscripts EditorManuscripts[]
+ 
+}
+
+model Reviewer {
+  id        String           @id @default(uuid())
+  userId    String           @unique
+  expertiseArea String
+  user      User          @relation(fields: [userId], references: [id])
+  reviews   Review[]
+  ReviewRequests ReviewRequests[]
+}
+
+model Author {
+  id        String           @id @default(uuid())
+  userId    String           @unique
+  affiliation String
+  user      User          @relation(fields: [userId], references: [id])
+  manuscripts Manuscript[]
+  ManuscriptAuthors ManuscriptAuthors[]
+}
+
+model Review {
+  id          String           @id @default(uuid())
+  manuscriptId String
+  reviewerId String
+  reviewDate DateTime
+  comments   String
+  recommendation Recommendation
+  manuscript Manuscript   @relation(fields: [manuscriptId], references: [id])
+  reviewer   Reviewer     @relation(fields: [reviewerId], references: [id])
+}
+
+model ManuscriptAuthors {
+  manuscriptId String
+  authorId     String
+  manuscript   Manuscript  @relation(fields: [manuscriptId], references: [id])
+  author       Author      @relation(fields: [authorId], references: [id])
+  @@id([manuscriptId, authorId])
+}
+
+model ReviewRequests {
+  id          String           @id @default(uuid())
+  manuscriptId String
+  reviewerId String
+  requestDate DateTime
+  status      RequestStatus
+  manuscript Manuscript   @relation(fields: [manuscriptId], references: [id])
+  reviewer   Reviewer     @relation(fields: [reviewerId], references: [id])
+}
+
+model EditorManuscripts {
+  id         String           @id @default(uuid())
+  manuscriptId String
+  editorId String
+  assignmentDate DateTime
+  manuscript Manuscript   @relation(fields: [manuscriptId], references: [id])
+  editor     Editor       @relation(fields: [editorId], references: [id])
+}
+
+model Manuscript {
+  id          String           @id @default(uuid())
+  title       String
+  abstract    String
+  keywords    String
+  status      Status
+  suggestedReviewer String
+  createdBy          String 
+  manuscriptLink  String 
+  proofofPayment  String 
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+  updatedBy          String
+  authorId    String
+  author      Author        @relation(fields: [authorId], references: [id])
+  manuscriptAuthors ManuscriptAuthors[]
+  reviews     Review[]
+  ReviewRequests ReviewRequests[]
+  editorManuscripts EditorManuscripts[]
+}
+
+model Role {
+  id          String      @id @default(uuid())
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  createdBy          String    
+  updatedBy          String
+  roleName    String      @unique
+  description String?
+  isActive    Boolean     @default(true)
+  users       User[]      @relation("UserRoles")
+  permissions Permission[] @relation("RolePermissions")
+
+  @@map("roles")
+}
+model Permission {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  createdBy          String    
+  updatedBy          String
+  permissionName String  @unique
+  isActive       Boolean @default(true)
+
+  role Role[] @relation("RolePermissions")
+
+  @@map("permissions")
+}
+
+enum Status {
+  SUBMITTED
+  UNDER_REVIEW
+  ACCEPTED
+  REJECTED
+}
+
+enum Recommendation {
+  ACCEPT
+  MINOR_REVISIONS
+  MAJOR_REVISIONS
+  REJECT
+}
+
+enum RequestStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+}
