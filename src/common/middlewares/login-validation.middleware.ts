@@ -4,6 +4,7 @@ import { validate } from 'class-validator';
 import { plainToInstance } from 'class-transformer';
 import { EmailLoginDto } from 'src/modules/auth/dtos/email-login.dto';
 
+
 @Injectable()
 export class LoginValidationMiddleware implements NestMiddleware {
   async use(req: Request, res: Response, next: NextFunction) {
@@ -11,7 +12,7 @@ export class LoginValidationMiddleware implements NestMiddleware {
 
     // Validate the DTO using class-validator
     const errors = await validate(dto, {
-      whitelist: true,
+      whitelist: true,      
     });
 
     if (errors.length > 0) {

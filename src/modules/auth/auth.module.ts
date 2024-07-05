@@ -18,6 +18,7 @@ import { AccessTokenStrategy } from './strategy/access-token.strategy';
 import { LocalStrategy } from './strategy/local.strategy';
 import { RefreshTokenStrategy } from './strategy/refresh-token.strategy';
 import { ThrottlerGuard } from '@nestjs/throttler';
+import { PasswordService } from './password.service';
 
 @Module({
   imports: [PassportModule, UserModule],
@@ -25,7 +26,7 @@ import { ThrottlerGuard } from '@nestjs/throttler';
   providers: [
     // RedisService,
     AuthService,
-  
+    PasswordService,
     LocalStrategy,
     AccessTokenStrategy,
     RefreshTokenStrategy,

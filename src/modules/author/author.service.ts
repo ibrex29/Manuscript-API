@@ -84,7 +84,8 @@ async getAllAuthors() {
   }
 
   async updateAuthor(id: string, data: Prisma.AuthorUpdateInput): Promise<Author> {
-    return this.prisma.author.update({ where: { id }, data });
+    return this.prisma.author
+    .update({ where: { id }, data });
   }
 
   async deleteAuthor(id: string): Promise<Author> {

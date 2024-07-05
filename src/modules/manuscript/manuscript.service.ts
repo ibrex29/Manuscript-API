@@ -1,18 +1,37 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, BadRequestException, InternalServerErrorException } from '@nestjs/common';
 import { CreateManuscriptDto } from './dto/create-manuscript.dto';
 import { Manuscript } from '@prisma/client';
 import { PrismaService } from 'prisma/prisma.service';
-
 
 @Injectable()
 export class ManuscriptService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async create(createManuscriptDto: CreateManuscriptDto, userId: string): Promise<Manuscript> {
+  async uploadManuscript(
+    createManuscriptDto: CreateManuscriptDto,
+    userId: string
+  ): Promise<Manuscript> {
     const { title, abstract, keywords, suggestedReviewer, manuscriptLink, proofofPayment } = createManuscriptDto;
-    const createdAt = new Date();
-    const x= "36e180ca-0723-48e8-a95a-3940ee68850a"
+
     try {
+      // Check if the user exists and is an author
+      const userWithAuthor = await this.prisma.user.findUnique({
+        where: { id: userId },
+        include: { author: true },
+      });
+
+      if (!userWithAuthor) {
+        throw new BadRequestException('User does not exist');
+      }
+
+      if (!userWithAuthor.author) {
+        throw new BadRequestException('User is not an author');
+      }
+
+      // Retrieve the author ID
+      const authorId = userWithAuthor.author.id;
+
+      // Create the manuscript
       const manuscript = await this.prisma.manuscript.create({
         data: {
           title,
@@ -21,19 +40,24 @@ export class ManuscriptService {
           suggestedReviewer,
           manuscriptLink,
           proofofPayment,
-          authorId: userId,
-          createdAt,
-          createdBy:userId,
+          authorId: authorId,
+          createdAt: new Date(),
+          createdBy: userId,
           updatedAt: new Date(),
           updatedBy: userId,
-          status: "SUBMITTED"
+          status: 'SUBMITTED',
         },
       });
 
       return manuscript;
     } catch (error) {
       console.error('Error creating manuscript:', error);
-      throw new Error('Failed to create manuscript'); // Example of generic error handling, adjust as per your needs
+
+      if (error instanceof BadRequestException) {
+        throw error;
+      }
+
+      throw new InternalServerErrorException('Failed to create manuscript');
     }
   }
 }

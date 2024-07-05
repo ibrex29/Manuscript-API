@@ -3,3 +3,10 @@ export type JwtPayload = {
   roles: string[];
   email?: string;
 };
+
+export type SessionUser = {
+  userId: string;
+  phoneNumber: string;
+  email: string;
+  roles: Array<string>;
+};
