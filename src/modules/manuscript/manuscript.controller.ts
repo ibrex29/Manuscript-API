@@ -1,12 +1,14 @@
 // src/modules/manuscript/manuscript.controller.ts
 
-import { Controller, Post, Body, Request, UseGuards } from '@nestjs/common'; 
+import { Controller, Post, Body, Request, UseGuards, Get, Param } from '@nestjs/common'; 
 import { ApiTags, ApiOperation, ApiCreatedResponse, ApiBadRequestResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { ManuscriptService } from './manuscript.service';
 import { CreateManuscriptDto } from './dto/create-manuscript.dto';
 import { RolesGuard } from '../auth/guard/role.guard';
 import { UserType } from '../user/types/user.type';
-import { Role} from 'src/common/constants/routes.constant'
+import { Public, Role} from 'src/common/constants/routes.constant'
+import { Manuscript } from '@prisma/client';
+import { AssignReviewerDto } from './dto/assign-reviewer.dto';
 
 @ApiTags('manuscripts')
 @ApiBearerAuth()
@@ -28,4 +30,13 @@ export class ManuscriptController {
       createManuscriptDto,
       req.user?.userId)
   }
+
+  
+  @Public()
+  @Get('assigned-manuscript/:reviewerId')
+  @ApiOperation({ summary: 'Get manuscripts assigned to a specific reviewer' })
+  async getReviewerWithManuscripts(@Param('reviewerId') reviewerId: string) {
+    return this.manuscriptService.getReviewerWithManuscripts(reviewerId);
+  }
+
 }

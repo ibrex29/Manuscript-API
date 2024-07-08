@@ -15,6 +15,8 @@ import { HttpModule } from '@nestjs/axios';
 import { CacheConfigModule } from './cache.module'; // Ensure this module is correctly defined
 import { UserModule } from './modules/user/user.module';
 import { ManuscriptModule } from './modules/manuscript/manuscript.module';
+import { ReviewerModule } from './modules/reviewer/reviewer.module';
+import { EditorModule } from './modules/editor/editor.module';
 
 @Module({
   imports: [
@@ -50,8 +52,10 @@ import { ManuscriptModule } from './modules/manuscript/manuscript.module';
     PrismaModule,
     AuthorModule,
     AuthModule,
+    EditorModule,
     UserModule,
-    ManuscriptModule
+    ManuscriptModule,
+    ReviewerModule
   ],
   controllers: [AppController],
   providers: [AppService],

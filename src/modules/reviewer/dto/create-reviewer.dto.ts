@@ -1,9 +1,10 @@
+
 // src/module/author/dto/create-author.dto.ts
 
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsEmail, isStrongPassword, IsString, MinLength, Matches } from 'class-validator';
 
-export class CreateAuthorDto {
+export class CreateReviewerDto {
 
   @ApiProperty({ example: 'John', description: 'The first name of the author' })
   @IsNotEmpty()

@@ -1,12 +1,12 @@
-import { Injectable, BadRequestException, InternalServerErrorException } from '@nestjs/common';
+import { Injectable, BadRequestException, InternalServerErrorException, NotFoundException, ConflictException } from '@nestjs/common';
 import { CreateManuscriptDto } from './dto/create-manuscript.dto';
-import { Manuscript } from '@prisma/client';
+import { Manuscript, Review } from '@prisma/client';
 import { PrismaService } from 'prisma/prisma.service';
+import { AssignReviewerDto } from './dto/assign-reviewer.dto';
 
 @Injectable()
 export class ManuscriptService {
   constructor(private readonly prisma: PrismaService) {}
-
   async uploadManuscript(
     createManuscriptDto: CreateManuscriptDto,
     userId: string
@@ -17,19 +17,15 @@ export class ManuscriptService {
       // Check if the user exists and is an author
       const userWithAuthor = await this.prisma.user.findUnique({
         where: { id: userId },
-        include: { author: true },
+        include: { Author: true },
       });
 
-      if (!userWithAuthor) {
-        throw new BadRequestException('User does not exist');
-      }
-
-      if (!userWithAuthor.author) {
-        throw new BadRequestException('User is not an author');
+      if (!userWithAuthor?.Author) {
+        throw new BadRequestException('User does not exist or is not an author');
       }
 
       // Retrieve the author ID
-      const authorId = userWithAuthor.author.id;
+      const authorId = userWithAuthor.Author.id;
 
       // Create the manuscript
       const manuscript = await this.prisma.manuscript.create({
@@ -40,12 +36,11 @@ export class ManuscriptService {
           suggestedReviewer,
           manuscriptLink,
           proofofPayment,
-          authorId: authorId,
-          createdAt: new Date(),
-          createdBy: userId,
-          updatedAt: new Date(),
-          updatedBy: userId,
+          authorId,
           status: 'SUBMITTED',
+          isPublished: false,
+          createdBy: userId,
+          updatedBy: userId,
         },
       });
 
@@ -53,6 +48,7 @@ export class ManuscriptService {
     } catch (error) {
       console.error('Error creating manuscript:', error);
 
+      // If it's a specific Prisma error or another exception, rethrow it
       if (error instanceof BadRequestException) {
         throw error;
       }
@@ -60,4 +56,21 @@ export class ManuscriptService {
       throw new InternalServerErrorException('Failed to create manuscript');
     }
   }
+
+
+    // New method to get a reviewer with their manuscripts
+  async getReviewerWithManuscripts(reviewerId: string) {
+    // Find the reviewer with their manuscripts
+    const reviewer = await this.prisma.reviewer.findUnique({
+      where: { id: reviewerId },
+      include: { Manuscript: true }   
+      });
+      if (!reviewer) {
+        throw new NotFoundException(`Reviewer with ID ${reviewerId} not found`);
+      }
+      return reviewer;
+}
+
+ 
+
 }

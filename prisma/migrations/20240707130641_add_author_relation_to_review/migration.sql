@@ -16,6 +16,8 @@ CREATE TABLE "User" (
     "email" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
+    "createdBy" TEXT NOT NULL,
+    "updatedBy" TEXT NOT NULL,
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
 );
@@ -42,8 +44,30 @@ CREATE TABLE "Author" (
     "id" TEXT NOT NULL,
     "userId" TEXT NOT NULL,
     "affiliation" TEXT NOT NULL,
+    "expertiseArea" TEXT NOT NULL,
 
     CONSTRAINT "Author_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Manuscript" (
+    "id" TEXT NOT NULL,
+    "title" TEXT NOT NULL,
+    "abstract" TEXT NOT NULL,
+    "keywords" TEXT NOT NULL,
+    "status" "Status" NOT NULL,
+    "authorId" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "createdBy" TEXT NOT NULL,
+    "suggestedReviewer" TEXT NOT NULL,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "updatedBy" TEXT NOT NULL,
+    "manuscriptLink" TEXT NOT NULL,
+    "proofofPayment" TEXT NOT NULL,
+    "isPublished" BOOLEAN NOT NULL,
+    "reviewerId" TEXT,
+
+    CONSTRAINT "Manuscript_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -54,50 +78,22 @@ CREATE TABLE "Review" (
     "reviewDate" TIMESTAMP(3) NOT NULL,
     "comments" TEXT NOT NULL,
     "recommendation" "Recommendation" NOT NULL,
+    "authorId" TEXT NOT NULL,
 
     CONSTRAINT "Review_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
-CREATE TABLE "ManuscriptAuthors" (
-    "manuscriptId" TEXT NOT NULL,
+CREATE TABLE "Reply" (
+    "id" TEXT NOT NULL,
+    "reviewId" TEXT NOT NULL,
     "authorId" TEXT NOT NULL,
+    "subject" TEXT NOT NULL,
+    "contents" TEXT NOT NULL,
+    "uploadFiles" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
-    CONSTRAINT "ManuscriptAuthors_pkey" PRIMARY KEY ("manuscriptId","authorId")
-);
-
--- CreateTable
-CREATE TABLE "ReviewRequests" (
-    "id" TEXT NOT NULL,
-    "manuscriptId" TEXT NOT NULL,
-    "reviewerId" TEXT NOT NULL,
-    "requestDate" TIMESTAMP(3) NOT NULL,
-    "status" "RequestStatus" NOT NULL,
-
-    CONSTRAINT "ReviewRequests_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "EditorManuscripts" (
-    "id" TEXT NOT NULL,
-    "manuscriptId" TEXT NOT NULL,
-    "editorId" TEXT NOT NULL,
-    "assignmentDate" TIMESTAMP(3) NOT NULL,
-
-    CONSTRAINT "EditorManuscripts_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "Manuscript" (
-    "id" TEXT NOT NULL,
-    "title" TEXT NOT NULL,
-    "abstract" TEXT NOT NULL,
-    "keywords" TEXT NOT NULL,
-    "submissionDate" TIMESTAMP(3) NOT NULL,
-    "status" "Status" NOT NULL,
-    "authorId" TEXT NOT NULL,
-
-    CONSTRAINT "Manuscript_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "Reply_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -108,6 +104,8 @@ CREATE TABLE "roles" (
     "roleName" TEXT NOT NULL,
     "description" TEXT,
     "isActive" BOOLEAN NOT NULL DEFAULT true,
+    "createdBy" TEXT NOT NULL,
+    "updatedBy" TEXT NOT NULL,
 
     CONSTRAINT "roles_pkey" PRIMARY KEY ("id")
 );
@@ -119,6 +117,8 @@ CREATE TABLE "permissions" (
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "permissionName" TEXT NOT NULL,
     "isActive" BOOLEAN NOT NULL DEFAULT true,
+    "createdBy" TEXT NOT NULL,
+    "updatedBy" TEXT NOT NULL,
 
     CONSTRAINT "permissions_pkey" PRIMARY KEY ("id")
 );
@@ -154,10 +154,10 @@ CREATE UNIQUE INDEX "roles_roleName_key" ON "roles"("roleName");
 CREATE UNIQUE INDEX "permissions_permissionName_key" ON "permissions"("permissionName");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "_UserRoles_AB_unique" ON "_UserRoles"("A", "B");
+CREATE INDEX "_UserRoles_B_index" ON "_UserRoles"("B");
 
 -- CreateIndex
-CREATE INDEX "_UserRoles_B_index" ON "_UserRoles"("B");
+CREATE UNIQUE INDEX "_UserRoles_AB_unique" ON "_UserRoles"("A", "B");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "_RolePermissions_AB_unique" ON "_RolePermissions"("A", "B");
@@ -175,31 +175,25 @@ ALTER TABLE "Reviewer" ADD CONSTRAINT "Reviewer_userId_fkey" FOREIGN KEY ("userI
 ALTER TABLE "Author" ADD CONSTRAINT "Author_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "Manuscript" ADD CONSTRAINT "Manuscript_authorId_fkey" FOREIGN KEY ("authorId") REFERENCES "Author"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Manuscript" ADD CONSTRAINT "Manuscript_reviewerId_fkey" FOREIGN KEY ("reviewerId") REFERENCES "Reviewer"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "Review" ADD CONSTRAINT "Review_manuscriptId_fkey" FOREIGN KEY ("manuscriptId") REFERENCES "Manuscript"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Review" ADD CONSTRAINT "Review_reviewerId_fkey" FOREIGN KEY ("reviewerId") REFERENCES "Reviewer"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "ManuscriptAuthors" ADD CONSTRAINT "ManuscriptAuthors_manuscriptId_fkey" FOREIGN KEY ("manuscriptId") REFERENCES "Manuscript"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Review" ADD CONSTRAINT "Review_authorId_fkey" FOREIGN KEY ("authorId") REFERENCES "Author"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "ManuscriptAuthors" ADD CONSTRAINT "ManuscriptAuthors_authorId_fkey" FOREIGN KEY ("authorId") REFERENCES "Author"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Reply" ADD CONSTRAINT "Reply_authorId_fkey" FOREIGN KEY ("authorId") REFERENCES "Author"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "ReviewRequests" ADD CONSTRAINT "ReviewRequests_manuscriptId_fkey" FOREIGN KEY ("manuscriptId") REFERENCES "Manuscript"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "ReviewRequests" ADD CONSTRAINT "ReviewRequests_reviewerId_fkey" FOREIGN KEY ("reviewerId") REFERENCES "Reviewer"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "EditorManuscripts" ADD CONSTRAINT "EditorManuscripts_manuscriptId_fkey" FOREIGN KEY ("manuscriptId") REFERENCES "Manuscript"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "EditorManuscripts" ADD CONSTRAINT "EditorManuscripts_editorId_fkey" FOREIGN KEY ("editorId") REFERENCES "Editor"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "Manuscript" ADD CONSTRAINT "Manuscript_authorId_fkey" FOREIGN KEY ("authorId") REFERENCES "Author"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Reply" ADD CONSTRAINT "Reply_reviewId_fkey" FOREIGN KEY ("reviewId") REFERENCES "Review"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "_UserRoles" ADD CONSTRAINT "_UserRoles_A_fkey" FOREIGN KEY ("A") REFERENCES "roles"("id") ON DELETE CASCADE ON UPDATE CASCADE;

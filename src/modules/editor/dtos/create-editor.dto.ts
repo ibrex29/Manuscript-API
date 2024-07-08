@@ -3,7 +3,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsEmail, isStrongPassword, IsString, MinLength, Matches } from 'class-validator';
 
-export class CreateAuthorDto {
+export class CreateEditorDto {
 
   @ApiProperty({ example: 'John', description: 'The first name of the author' })
   @IsNotEmpty()
