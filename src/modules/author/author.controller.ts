@@ -10,10 +10,11 @@ import { UserType } from '../user/types/user.type';
 import { CreateReplyDto } from './dtos/create-reply.dto';
 import { RolesGuard } from '../auth/guard/role.guard';
 
-@ApiBearerAuth() // Optional: If you are using authentication
+@ApiBearerAuth() 
 @ApiTags('author')
 @UseGuards(RolesGuard)
-@Controller({ path: 'author', version: '1' }) // Versioning with v1
+@Role(UserType.AUTHOR)
+@Controller({ path: 'author', version: '1' }) 
 export class AuthorController {
   constructor(private authorService: AuthorService) {}
 
@@ -28,15 +29,8 @@ export class AuthorController {
     return this.authorService.createAuthor(createAuthorDto);
   }
 
-  @Public()
-  @Get()
-  @ApiOperation({ summary: 'Get all authors' })
-  @ApiOkResponse({ description: 'The list of authors has been successfully retrieved.' })
-  async getAllAuthors(){
-    return this.authorService.getAllAuthors();
-  }
 
-  @Role(UserType.AUTHOR)
+ 
   @Get('Sumitted-Manuscript')
   @ApiOperation({ summary: 'Get all manuscript submitted by logged in author' })
   async getSubmittedManuscriptsForLoggedInUser(
@@ -44,7 +38,7 @@ export class AuthorController {
     return this.authorService.getSubmittedManuscriptsForLoggedInUser(req.user?.userId);
   }
 
-  @Role(UserType.AUTHOR)
+  // @Role(UserType.AUTHOR)
   @Get('review-message')
   @ApiOperation({ summary: 'Get reviews for manuscripts submitted by the logged-in author' })
   @ApiResponse({
@@ -98,7 +92,7 @@ export class AuthorController {
   // }
 
 
-  @Role(UserType.AUTHOR)
+  
   @Post("reply")
   @ApiOperation({ summary: 'Create a reply to a review' })
   @ApiResponse({ status: 201, description: 'Reply created successfully' })

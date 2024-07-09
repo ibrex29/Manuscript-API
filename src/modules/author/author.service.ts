@@ -6,6 +6,7 @@ import { PrismaService } from 'prisma/prisma.service';
 import { CreateAuthorDto } from './dtos/create-author.dto';
 import * as bcrypt from 'bcrypt';
 import { CreateReplyDto } from './dtos/create-reply.dto';
+import { UserType } from '../user/types/user.type';
 
 @Injectable()
 export class AuthorService {
@@ -15,12 +16,14 @@ export class AuthorService {
   async createAuthor(createAuthorDto: CreateAuthorDto) {
     const { email, firstName, lastName, password, affiliation, expertiseArea } = createAuthorDto;
 
-    // Find the author role
-    const authorRole = await this.prisma.role.findUnique({
-      where: { roleName: 'author' }, // Adjust roleName as per your Role enum or database value
-    });
+    // // Find the author role
+    // const roleName = await this.prisma.role.findUnique({
+    //   where: { roleName: 'author' }, // Adjust roleName as per your Role enum or database value
+    // });
 
-    if (!authorRole) {
+    const roleName= UserType.AUTHOR
+
+    if (!roleName) {
       throw new ConflictException('Author role not found');
     }
 
@@ -46,7 +49,7 @@ export class AuthorService {
         createdBy: "",
         updatedBy: " ",
         roles: {
-          connect: { id: authorRole.id }, // Connect user to the author role
+          connect: { id: roleName }, // Connect user to the author role
         },
       },
     });
@@ -62,22 +65,6 @@ export class AuthorService {
 
     return createdAuthor;
   }
-  async getAllAuthors() {
-    return this.prisma.author.findMany({
-      include: {
-        User: {
-          include: {
-            roles: {
-              select: {
-                roleName: true,
-              },
-            },
-          },
-        },
-      },
-    });
-  }
-  
 
   async getAuthorById(id: string): Promise<Author | null> {
     return this.prisma.author.findUnique({ where: { id } });

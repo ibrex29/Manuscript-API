@@ -18,7 +18,7 @@ export class CryptoService {
     // Compare the provided password with the hashed password
     return bcrypt.compare(password, hashedPassword);
   }
-
+ 
   getRandomBytes(length: number): Promise<Buffer> {
     return new Promise((resolve, reject) => {
       randomBytes(length, (err, buffer) => {

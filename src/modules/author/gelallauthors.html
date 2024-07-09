@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login and Review Tasks</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 600px;
+        }
+        .login-container, .tasks-container {
+            margin-bottom: 20px;
+        }
+        .login-container h1, .tasks-container h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .login-container input, .login-container button {
+            display: block;
+            width: calc(100% - 22px);
+            margin: 10px auto;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .login-container input[type="email"], .login-container input[type="password"] {
+            width: calc(100% - 22px);
+        }
+        .login-container button {
+            background-color: #4CAF50;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+        }
+        .login-container button:hover {
+            background-color: #45a049;
+        }
+        .review-card, .no-tasks {
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 10px;
+        }
+        .review-card h2 {
+            margin: 0 0 10px 0;
+        }
+        .review-card p {
+            margin: 5px 0;
+        }
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .pagination button {
+            padding: 10px;
+            margin: 0 5px;
+            border: none;
+            background-color: #4CAF50;
+            color: #fff;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .pagination button:hover {
+            background-color: #45a049;
+        }
+        .pagination button[disabled] {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="login-container" id="loginForm">
+            <h1>Login</h1>
+            <input type="email" id="email" placeholder="Email" />
+            <input type="password" id="password" placeholder="Password" />
+            <button onclick="login()">Login</button>
+            <p id="loginMessage"></p>
+        </div>
+
+        <div class="tasks-container" id="tasksContainer" style="display: none;">
+            <h1>My Review Tasks</h1>
+            <div id="tasksList">
+                <p>Loading review tasks...</p>
+            </div>
+            <div class="pagination" id="pagination">
+                <button id="prevPage" onclick="prevPage()">Previous</button>
+                <button id="nextPage" onclick="nextPage()">Next</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let accessToken = '';
+        let currentPage = 1;
+        const itemsPerPage = 3;
+
+        async function login() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            try {
+                const response = await fetch('http://localhost:5000/api/v1/auth/login/email', {
+                    method: 'POST',
+                    headers: {
+                        'accept': '*/*',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                accessToken = data.accessToken;
+                document.getElementById('loginForm').style.display = 'none';
+                document.getElementById('tasksContainer').style.display = 'block';
+                fetchReviewTasks();
+            } catch (error) {
+                document.getElementById('loginMessage').textContent = `Login failed: ${error.message}`;
+            }
+        }
+
+        async function fetchReviewTasks() {
+            try {
+                const response = await fetch('http://localhost:5000/api/v1/editor/assigned', {
+                    method: 'GET',
+                    headers: {
+                        'accept': '*/*',
+                        'Authorization': `Bearer ${accessToken}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+
+                const reviewTasks = await response.json();
+                displayReviewTasks(reviewTasks);
+                updatePaginationButtons(reviewTasks.length);
+            } catch (error) {
+                document.getElementById('tasksList').innerHTML = `<p>Error loading review tasks: ${error.message}</p>`;
+            }
+        }
+
+        function displayReviewTasks(reviewTasks) {
+            const tasksList = document.getElementById('tasksList');
+            tasksList.innerHTML = '';
+
+            if (reviewTasks.length === 0) {
+                tasksList.innerHTML = '<div class="no-tasks"><p>>You have the following review task(s):<br>No Review Tasks.</p></div>';
+                document.getElementById('pagination').style.display = 'none';
+                return;
+            }
+
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+            const tasksToShow = reviewTasks.slice(startIndex, endIndex);
+
+            tasksToShow.forEach(task => {
+                const reviewCard = document.createElement('div');
+                reviewCard.className = 'review-card';
+
+                const title = document.createElement('h2');
+                title.textContent = `Manuscript: ${task.Manuscript.title}`;
+
+                const reviewDate = document.createElement('p');
+                reviewDate.textContent = `Review Date: ${new Date(task.reviewDate).toLocaleDateString()}`;
+
+                const comments = document.createElement('p');
+                comments.textContent = `Comments: ${task.comments}`;
+
+                const recommendation = document.createElement('p');
+                recommendation.textContent = `Recommendation: ${task.recommendation}`;
+
+                // reviewCard.appendChild(title);
+                reviewCard.appendChild(reviewDate);
+                reviewCard.appendChild(comments);
+                reviewCard.appendChild(recommendation);
+
+                tasksList.appendChild(reviewCard);
+            });
+
+            document.getElementById('pagination').style.display = reviewTasks.length > itemsPerPage ? 'flex' : 'none';
+        }
+
+        function updatePaginationButtons(totalItems) {
+            const totalPages = Math.ceil(totalItems / itemsPerPage);
+            document.getElementById('prevPage').disabled = currentPage === 1;
+            document.getElementById('nextPage').disabled = currentPage === totalPages;
+        }
+
+        function prevPage() {
+            if (currentPage > 1) {
+                currentPage--;
+                fetchReviewTasks();
+            }
+        }
+
+        function nextPage() {
+            currentPage++;
+            fetchReviewTasks();
+        }
+    </script>
+</body>
+</html>

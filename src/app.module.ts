@@ -4,10 +4,8 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { PrismaModule } from '../prisma/prisma.module';
-import { AuthorModule } from './modules/author/author.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AuthModule } from './modules/auth/auth.module';
-// import { UserModule } from './modules/user/user.module'; // Make sure the path is correct
 import { JwtModule } from '@nestjs/jwt';
 import { ThrottlerModule, seconds } from '@nestjs/throttler';
 import { HTTP_MAX_REDIRECTS, HTTP_TIMEOUT, THROTTLE_LIMIT, THROTTLE_TTL } from './common/constants';
@@ -17,12 +15,13 @@ import { UserModule } from './modules/user/user.module';
 import { ManuscriptModule } from './modules/manuscript/manuscript.module';
 import { ReviewerModule } from './modules/reviewer/reviewer.module';
 import { EditorModule } from './modules/editor/editor.module';
+import { AuthorModule } from './modules/author/author.module';
 
 @Module({
   imports: [
     PrismaModule,
     ConfigModule.forRoot({
-      cache: true, // cache env in memory
+      cache: true, 
       isGlobal: true,
       envFilePath: ['.env'],
     }),

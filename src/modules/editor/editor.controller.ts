@@ -9,7 +9,7 @@ import { AssignReviewerDto } from './dtos/assign-reviewer.dto';
 import { UserType } from '../user/types/user.type';
 import { RolesGuard } from '../auth/guard/role.guard';
 
-@ApiBearerAuth() // Optional: If you are using authentication
+@ApiBearerAuth() 
 @ApiTags('editor')
 @UseGuards(RolesGuard)
 @Controller({ path: 'editor', version: '1' }) // Versioning with v1
@@ -19,8 +19,8 @@ export class EditorController {
   @Public()
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  @ApiOperation({ summary: 'Create a new author' })
-  @ApiCreatedResponse({ description: 'The author has been successfully created.' })
+  @ApiOperation({ summary: 'Create a new editor' })
+  @ApiCreatedResponse({ description: 'The editor has been successfully created.' })
   @ApiBadRequestResponse({ description: 'Invalid data provided.' })
   @ApiBody({ type: CreateEditorDto })
   async createAuthor(@Body() createAuthorDto: CreateEditorDto): Promise<Editor> {
@@ -28,12 +28,21 @@ export class EditorController {
   }
 
   @Post('assign-reviewer')
-  @Role(UserType.EDITOR)  // Updated to reflect that only an editor can assign reviewers
+  @Role(UserType.EDITOR)  
   @ApiOperation({ summary: 'Assign a reviewer to a manuscript' })
   @ApiCreatedResponse({ description: 'The reviewer has been successfully assigned to the manuscript.' })
   @ApiBadRequestResponse({ description: 'Invalid data provided or reviewer already assigned.' })
   async assignReviewer(@Body() assignReviewerDto: AssignReviewerDto) {
     return this.editorService.assignManuscriptToReviewer(assignReviewerDto);
+  }
+
+
+  @Public()
+  @Get("list-all-authors")
+  @ApiOperation({ summary: 'Get all authors' })
+  @ApiOkResponse({ description: 'The list of authors has been successfully retrieved.' })
+  async getAllAuthors(){
+    return this.editorService.getAllAuthors();
   }
 
   @Public()
@@ -43,14 +52,16 @@ export class EditorController {
     return this.editorService.listSubmittedManuscripts();
   }
 
-  @Role(UserType.EDITOR)
+  // @Role(UserType.EDITOR)
+  @Public()
   @Get('assigned')
   @ApiOperation({ summary: 'Get all assigned manuscripts' })
   async getAllAssignedManuscripts() {
     return this.editorService.getAllAssignedManuscripts();
   }
 
-  @Role(UserType.EDITOR)
+  // @Role(UserType.EDITOR)
+  @Public()
   @Get('unassigned')
   @ApiOperation({ summary: 'Get all unassigned manuscripts' })
   async getAllUnassignedManuscripts() {

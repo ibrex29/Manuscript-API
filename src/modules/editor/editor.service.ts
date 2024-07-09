@@ -62,7 +62,31 @@ export class EditorService {
       return creatededitor;
     }
 
-   
+    async getAllAuthors() {
+      return this.prisma.author.findMany({
+        where: {
+          User: {
+            roles: {
+              some: {
+                roleName: 'author',
+              },
+            },
+          },
+        },
+        include: {
+          User: {
+            include: {
+              roles: {
+                select: {
+                  roleName: true,
+                },
+              },
+            },
+          },
+        },
+      });
+    }
+    
 
     async assignManuscriptToReviewer(dto: AssignReviewerDto) {
       const { manuscriptId, reviewerId } = dto;
