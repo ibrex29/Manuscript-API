@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Assign Manuscript to Reviewer</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    form {
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      width: 300px;
+    }
+    label {
+      display: block;
+      margin-bottom: 8px;
+    }
+    select, input[type="text"], input[type="submit"] {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    input[type="submit"] {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+    }
+    input[type="submit"]:hover {
+      background-color: #45a049;
+    }
+  </style>
+</head>
+<body>
+
+  <form id="assignForm">
+    <h2>Assign Manuscript to Reviewer</h2>
+    
+    <label for="manuscriptId">Manuscript:</label>
+    <select id="manuscriptId" name="manuscriptId" required>
+      <option value="">Select a manuscript</option>
+    </select>
+
+    <label for="reviewerId">Reviewer ID:</label>
+    <input type="text" id="reviewerId" name="reviewerId" required>
+
+    <input type="submit" value="Assign Reviewer">
+  </form>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      const manuscriptSelect = document.getElementById('manuscriptId');
+
+      try {
+        const response = await fetch('http://localhost:5000/api/v1/editor/unassigned', {
+          method: 'GET',
+          headers: {
+            'accept': '*/*',
+          },
+        });
+
+        if (response.ok) {
+          const manuscripts = await response.json();
+          manuscripts.forEach(manuscript => {
+            const option = document.createElement('option');
+            option.value = manuscript.id;
+            option.textContent = manuscript.title;
+            manuscriptSelect.appendChild(option);
+          });
+        } else {
+          alert('Failed to fetch unassigned manuscripts');
+        }
+      } catch (error) {
+        console.error('Error fetching unassigned manuscripts:', error);
+        alert('Error fetching unassigned manuscripts');
+      }
+    });
+
+    document.getElementById('assignForm').addEventListener('submit', async (event) => {
+      event.preventDefault();
+
+      const manuscriptId = document.getElementById('manuscriptId').value;
+      const reviewerId = document.getElementById('reviewerId').value;
+
+      if (!manuscriptId) {
+        alert('Please select a manuscript');
+        return;
+      }
+
+      const response = await fetch('http://localhost:5000/api/v1/editor/assign-reviewer', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'accept': '*/*',
+        },
+        body: JSON.stringify({ manuscriptId, reviewerId })
+      });
+
+      if (response.ok) {
+        alert('Reviewer assigned successfully.');
+      } else {
+        const errorData = await response.json();
+        alert(`Error: ${errorData.message}`);
+      }
+    });
+  </script>
+
+</body>
+</html>

@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Put, Delete, Param, Body, Version, HttpStatus, HttpCode, Request, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Param, Body, Version, HttpStatus, HttpCode, Request, UseGuards, HttpException } from '@nestjs/common';
 import { EditorService } from './editor.service';
 import { Prisma, Author, Editor, Manuscript, Status } from '@prisma/client';
 import { ApiTags, ApiBearerAuth, ApiOperation, ApiParam, ApiResponse, ApiCreatedResponse, ApiOkResponse, ApiNotFoundResponse, ApiBadRequestResponse, ApiBody } from '@nestjs/swagger';
@@ -8,6 +8,7 @@ import { CreateEditorDto } from './dtos/create-editor.dto';
 import { AssignReviewerDto } from './dtos/assign-reviewer.dto';
 import { UserType } from '../user/types/user.type';
 import { RolesGuard } from '../auth/guard/role.guard';
+import { PublishManuscriptDto } from './dtos/publish-manuscript.dto';
 
 @ApiBearerAuth() 
 @ApiTags('editor')
@@ -27,9 +28,10 @@ export class EditorController {
   async createAuthor(@Body() createAuthorDto: CreateEditorDto): Promise<Editor> {
     return this.editorService.createAuthor(createAuthorDto);
   }
-
+  
+  @Public()
   @Post('assign-reviewer')
-  @Role(UserType.EDITOR)  
+  // @Role(UserType.EDITOR)  
   @ApiOperation({ summary: 'Assign a reviewer to a manuscript' })
   @ApiCreatedResponse({ description: 'The reviewer has been successfully assigned to the manuscript.' })
   @ApiBadRequestResponse({ description: 'Invalid data provided or reviewer already assigned.' })
@@ -94,6 +96,20 @@ export class EditorController {
   @Get("stat")
   async getStatistics() {
     return this.editorService.getStatistics();
+  }
+
+  @Public()
+  @Post('publish')
+  async publishManuscript(@Body() publishManuscriptDto: PublishManuscriptDto) {
+    const { manuscriptId } = publishManuscriptDto;
+
+    try {
+      const updatedManuscript = await this.editorService.publishManuscript(manuscriptId);
+      return updatedManuscript;
+    } catch (error) {
+      console.error('Error in publishManuscript controller:', error);
+      throw new HttpException('Could not publish manuscript.', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 
 }

@@ -4,6 +4,7 @@ import { CreateEditorDto } from './dtos/create-editor.dto';
 import * as bcrypt from 'bcrypt';
 import { AssignReviewerDto } from './dtos/assign-reviewer.dto';
 import { Manuscript, Status } from '@prisma/client';
+import { UserType } from '../user/types/user.type';
 
 
 @Injectable()
@@ -68,7 +69,7 @@ export class EditorService {
           User: {
             roles: {
               some: {
-                roleName: 'author',
+                roleName: UserType.AUTHOR,
               },
             },
           },
@@ -105,6 +106,11 @@ export class EditorService {
         throw new ConflictException('Manuscript is already assigned to a reviewer');
       }
     
+       // Ensure the manuscript status is not "PUBLISHED"
+    if (manuscript.status === Status.PUBLISHED) {
+      throw new ConflictException('Cannot assign a reviewer to a published manuscript');
+    }
+
       // Find the reviewer
       const reviewer = await this.prisma.reviewer.findUnique({
         where: { id: reviewerId },
@@ -247,4 +253,21 @@ export class EditorService {
     };
   }
 
+
+  async publishManuscript(manuscriptId: string,) {
+    try {
+      // Update the manuscript to be published and associate it with a publication
+      const updatedManuscript = await this.prisma.manuscript.update({
+        where: { id: manuscriptId },
+        data: {
+          isPublished: true,
+          status:"PUBLISHED",
+        },
+      });
+      return updatedManuscript;
+    } catch (error) {
+      console.error('Error publishing manuscript:', error);
+      throw new Error('Could not publish manuscript.');
+    }
+  }
 }

@@ -38,6 +38,7 @@ model Editor {
   id     String @id @default(uuid())
   userId String @unique
   User   User   @relation(fields: [userId], references: [id])
+  publications Publication[]
 }
 
 model Reviewer {
@@ -68,6 +69,10 @@ model Manuscript {
   Author            Author    @relation(fields: [authorId], references: [id])
   Reviewer          Reviewer? @relation(fields: [reviewerId], references: [id])
   Review            Review[]
+  publicationId String? 
+  publication       Publication? @relation(fields: [publicationId], references: [id])
+
+
 }
 
 model Review {
@@ -94,6 +99,17 @@ model Reply {
   createdAt   DateTime @default(now())
   Author      Author   @relation(fields: [authorId], references: [id])
   Review      Review   @relation(fields: [reviewId], references: [id])
+}
+
+model Publication{
+  id          String   @id @default(uuid())
+  title       String
+  abstract    String
+  keywords    String
+  editorId  String?
+  editor    Editor?  @relation(fields: [editorId], references: [id])
+  manuscripts  Manuscript[]
+
 }
 
 model Permission {

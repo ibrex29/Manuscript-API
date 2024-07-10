@@ -11,7 +11,7 @@ import { UserType } from 'src/modules/user/types/user.type';
 import { CreateReviewDto } from './dto/create-review.dto';
 import { AcceptRejectManuscriptDto } from './dto/accept-reject-manuscript.dto';
 
-
+           
 
 @ApiBearerAuth()
 @ApiTags('reviewer')
