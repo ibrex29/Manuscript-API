@@ -194,4 +194,57 @@ export class EditorService {
     const count = manuscripts.length;
     return { count, manuscripts };
   }
+
+  async countReviewers() {
+    return this.prisma.reviewer.count();
+  }
+
+  async countAuthors() {
+    return this.prisma.author.count();
+  }
+
+  async countAssignedManuscripts() {
+    return this.prisma.manuscript.count({
+      where: {
+        reviewerId: {
+          not: null,
+        },
+      },
+    });
+  }
+
+  async countUnassignedManuscripts() {
+    return this.prisma.manuscript.count({
+      where: {
+        reviewerId: null,
+      },
+    });
+  }
+
+  async countPublishedManuscripts() {
+    return this.prisma.manuscript.count({
+      where: {
+        isPublished: true,
+      },
+    });
+  }
+
+  async getStatistics() {
+    const [reviewerCount, authorCount, assignedManuscriptCount, unassignedManuscriptCount, publishedManuscriptCount] = await Promise.all([
+      this.countReviewers(),
+      this.countAuthors(),
+      this.countAssignedManuscripts(),
+      this.countUnassignedManuscripts(),
+      this.countPublishedManuscripts()
+    ]);
+
+    return {
+      reviewers: reviewerCount,
+      authors: authorCount,
+      assignedManuscripts: assignedManuscriptCount,
+      unassignedManuscripts: unassignedManuscriptCount,
+      publishedManuscripts: publishedManuscriptCount,
+    };
+  }
+
 }

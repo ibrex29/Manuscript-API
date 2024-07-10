@@ -12,6 +12,7 @@ import { RolesGuard } from '../auth/guard/role.guard';
 @ApiBearerAuth() 
 @ApiTags('editor')
 @UseGuards(RolesGuard)
+
 @Controller({ path: 'editor', version: '1' }) // Versioning with v1
 export class EditorController {
   constructor(private editorService: EditorService) {}
@@ -89,4 +90,10 @@ export class EditorController {
   async getManuscriptsByStatus(@Param('status') status: Status) {
     return this.editorService.getManuscriptsByStatus(status);
   }
+  @Public()
+  @Get("stat")
+  async getStatistics() {
+    return this.editorService.getStatistics();
+  }
+
 }
