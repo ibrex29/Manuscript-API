@@ -37,11 +37,20 @@ async function bootstrap() {
 
   // Swagger configuration
   const config = new DocumentBuilder()
-    .setTitle('Manuscript management API')
-    .setDescription('API')
+    .setTitle('Manuscript Management API')
+    .setDescription(
+        'This API facilitates the management of manuscripts, allowing users to perform various operations such as submission, review, and publication. Key features include:\n' +
+        '\n' +
+        '1. **User Authentication:** Secure access to the system using bearer tokens.\n' +
+        '2. **Manuscript Submission:** Allow authors to submit manuscripts for review.\n' +
+        '3. **Review Assignment:** Assign reviewers to submitted manuscripts.\n' +
+        '4. **Feedback Provision:** Enable reviewers to provide feedback on manuscripts.\n' +
+        '5. **Publication Tracking:** Track the status of manuscripts from submission to publication.\n'
+    )
     .setVersion('1.0')
     .addBearerAuth() 
     .build();
+
 
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('docs', app, document); // Set up the Swagger module

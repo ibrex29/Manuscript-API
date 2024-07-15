@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Selling Website</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+        }
+        .header {
+            background-color: #333;
+            color: #fff;
+            padding: 1rem;
+            text-align: center;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+        .hero {
+            position: relative;
+            overflow: hidden;
+            text-align: center;
+            padding: 4rem 0;
+        }
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+        .hero p {
+            font-size: 1.2rem;
+            color: #555;
+        }
+        .slider {
+            position: relative;
+            max-width: 100%;
+            margin: 0 auto;
+        }
+        .slides {
+            display: flex;
+            transition: transform 0.5s ease;
+        }
+        .slide {
+            min-width: 100%;
+            box-sizing: border-box;
+        }
+        .slide img {
+            width: 100%;
+            height: auto;
+        }
+        .prev, .next {
+            position: absolute;
+            top: 50%;
+            width: auto;
+            height: 50px;
+            margin-top: -22px;
+            padding: 16px;
+            color: #fff;
+            background-color: rgba(0, 0, 0, 0.5);
+            border: none;
+            cursor: pointer;
+            border-radius: 3px;
+        }
+        .prev {
+            left: 10px;
+        }
+        .next {
+            right: 10px;
+        }
+        .prev:hover, .next:hover {
+            background-color: rgba(0, 0, 0, 0.7);
+        }
+        .features {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 3rem;
+            gap: 2rem;
+        }
+        .feature {
+            text-align: center;
+        }
+        .feature img {
+            max-width: 100%;
+            height: auto;
+        }
+        .feature h2 {
+            margin-top: 1rem;
+            font-size: 1.5rem;
+        }
+        .feature p {
+            color: #777;
+        }
+        .footer {
+            background-color: #555;
+            color: #fff;
+            text-align: center;
+            padding: 1rem 0;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <h1>Data Selling Website</h1>
+        <p>Unlock the power of data</p>
+    </header>
+    <div class="container">
+        <section class="hero">
+            <div class="slider">
+                <div class="slides">
+                    <div class="slide">
+                        <img src="slider-image1.jpg" alt="Slider Image 1">
+                    </div>
+                    <div class="slide">
+                        <img src="slider-image2.jpg" alt="Slider Image 2">
+                    </div>
+                    <div class="slide">
+                        <img src="slider-image3.jpg" alt="Slider Image 3">
+                    </div>
+                </div>
+                <button class="prev" onclick="prevSlide()">&#10094;</button>
+                <button class="next" onclick="nextSlide()">&#10095;</button>
+            </div>
+            <h1>Welcome to our Data Marketplace</h1>
+            <p>Find valuable datasets for your business needs.</p>
+        </section>
+        <section class="features">
+            <div class="feature">
+                <img src="placeholder.jpg" alt="Feature 1">
+                <h2>Data Categories</h2>
+                <p>Explore various categories of data.</p>
+            </div>
+            <div class="feature">
+                <img src="placeholder.jpg" alt="Feature 2">
+                <h2>Data Quality</h2>
+                <p>High-quality datasets ready for analysis.</p>
+            </div>
+            <div class="feature">
+                <img src="placeholder.jpg" alt="Feature 3">
+                <h2>Data Security</h2>
+                <p>Securely sourced and verified data.</p>
+            </div>
+        </section>
+    </div>
+    <footer class="footer">
+        <p>&copy; 2024 Data Selling Website. All rights reserved.</p>
+    </footer>
+    <script>
+        let slideIndex = 0;
+        const slides = document.querySelector('.slides');
+        const slideCount = document.querySelectorAll('.slide').length;
+
+        function showSlide(index) {
+            if (index >= slideCount) slideIndex = 0;
+            if (index < 0) slideIndex = slideCount - 1;
+            slides.style.transform = `translateX(${-slideIndex * 100}%)`;
+        }
+
+        function nextSlide() {
+            slideIndex++;
+            showSlide(slideIndex);
+        }
+
+        function prevSlide() {
+            slideIndex--;
+            showSlide(slideIndex);
+        }
+
+        // Automatic slide transition
+        setInterval(nextSlide, 5000);
+    </script>
+</body>
+</html>

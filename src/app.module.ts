@@ -16,6 +16,7 @@ import { ManuscriptModule } from './modules/manuscript/manuscript.module';
 import { ReviewerModule } from './modules/reviewer/reviewer.module';
 import { EditorModule } from './modules/editor/editor.module';
 import { AuthorModule } from './modules/author/author.module';
+import { TurnstileModule } from './modules/turnstile/turnstile.module';
 
 @Module({
   imports: [
@@ -54,7 +55,10 @@ import { AuthorModule } from './modules/author/author.module';
     EditorModule,
     UserModule,
     ManuscriptModule,
-    ReviewerModule
+    ReviewerModule,
+    TurnstileModule,
+   
+
   ],
   controllers: [AppController],
   providers: [AppService],

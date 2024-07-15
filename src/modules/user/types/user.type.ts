@@ -3,5 +3,6 @@ export enum UserType {
   REVIEWER = 'reviewer',
   AUTHOR = 'author',
   EDITOR = 'editor',
+  SUPERADMIN = "super-admin"
   
 }

@@ -9,6 +9,7 @@ import { AssignReviewerDto } from './dtos/assign-reviewer.dto';
 import { UserType } from '../user/types/user.type';
 import { RolesGuard } from '../auth/guard/role.guard';
 import { PublishManuscriptDto } from './dtos/publish-manuscript.dto';
+import { AssignRoleByNameDto } from './dtos/assign-role-by-name.dto';
 
 @ApiBearerAuth() 
 @ApiTags('editor')
@@ -112,4 +113,20 @@ export class EditorController {
     }
   }
 
+  @Role(UserType.ADMIN)
+  @Post('assign-role-by-name')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Assign a role to a user by role name' })
+  @ApiCreatedResponse({ description: 'The role has been successfully assigned to the user.' })
+  @ApiBadRequestResponse({ description: 'Invalid data provided.' })
+  @ApiBody({ type: AssignRoleByNameDto })
+  async assignRoleByName(@Body() assignRoleByNameDto: AssignRoleByNameDto) {
+    try {
+      return await this.editorService.assignRoleByName(assignRoleByNameDto);
+    } catch (error) {
+      console.error('Error in assignRoleByName controller:', error);
+      throw new HttpException('Could not assign role.', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+  
 }

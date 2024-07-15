@@ -5,6 +5,7 @@ import * as bcrypt from 'bcrypt';
 import { AssignReviewerDto } from './dtos/assign-reviewer.dto';
 import { Manuscript, Status } from '@prisma/client';
 import { UserType } from '../user/types/user.type';
+import { AssignRoleByNameDto } from './dtos/assign-role-by-name.dto';
 
 
 @Injectable()
@@ -270,4 +271,32 @@ export class EditorService {
       throw new Error('Could not publish manuscript.');
     }
   }
+
+  async getRoleIdByName(roleName: string): Promise<string> {
+    const role = await this.prisma.role.findUnique({
+      where: { roleName },
+    });
+
+    if (!role) {
+      throw new Error(`Role with name ${roleName} not found`);
+    }
+
+    return role.id;
+  }
+
+  // Method to assign role by name
+  async assignRoleByName(assignRoleByNameDto: AssignRoleByNameDto) {
+    const { userId, roleName } = assignRoleByNameDto;
+    const roleId = await this.getRoleIdByName(roleName);
+
+    return this.prisma.user.update({
+      where: { id: userId },
+      data: {
+        roles: {
+          connect: { id: roleId }
+        }
+      },
+    });
+  }
+
 }
