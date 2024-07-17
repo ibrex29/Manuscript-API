@@ -138,15 +138,15 @@ export class EditorController {
   }
 
  
-  // @Post('publish')
-  // @Role(UserType.EDITOR)  
-  // @ApiOperation({ summary: 'Publish a manuscript' })
-  // @ApiResponse({ status: 200, description: 'Manuscript published successfully.' })
-  // @ApiResponse({ status: 400, description: 'Invalid input data or manuscript status not ACCEPTED.' })
-  // async publishManuscript(
-  // @Request() req,
-  // @Body() publishManuscriptDto: PublishManuscriptDto) {
-  //   return this.editorService.publishManuscript(publishManuscriptDto, req.user?.userId);
-  // }
+  @Post('publish')
+  @Role(UserType.EDITOR)  
+  @ApiOperation({ summary: 'Publish a manuscript' })
+  @ApiResponse({ status: 200, description: 'Manuscript published successfully.' })
+  @ApiResponse({ status: 400, description: 'Invalid input data or manuscript status not ACCEPTED.' })
+  async publishManuscript(
+  @Request() req,
+  @Body() publishManuscriptDto: PublishManuscriptDto) {
+    return this.editorService.publishManuscript(publishManuscriptDto, req.user?.userId);
+  }
   
 }

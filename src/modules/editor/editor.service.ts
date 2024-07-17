@@ -365,47 +365,47 @@ export class EditorService {
   }
 
 
-//   async publishManuscript(publishManuscriptDto: PublishManuscriptDto, userId: string) {
-//     const { manuscriptId, title, abstract, keywords, formattedManuscript } = publishManuscriptDto;
+  async publishManuscript(publishManuscriptDto: PublishManuscriptDto, userId: string) {
+    const { manuscriptId, title, abstract, keywords, formattedManuscript } = publishManuscriptDto;
     
-//     // Fetch the manuscript to check its status
-//     const manuscript = await this.prisma.manuscript.findUnique({
-//       where: { id: manuscriptId }
-//     });
+    // Fetch the manuscript to check its status
+    const manuscript = await this.prisma.manuscript.findUnique({
+      where: { id: manuscriptId }
+    });
 
-//     if (!manuscript) {
-//       throw new BadRequestException('Manuscript not found');
-//     }
+    if (!manuscript) {
+      throw new BadRequestException('Manuscript not found');
+    }
 
-//     if (manuscript.status !== 'ACCEPTED') {
-//       throw new BadRequestException('Manuscript status must be ACCEPTED By reviewer to be published');
-//     }
+    if (manuscript.status !== 'ACCEPTED') {
+      throw new BadRequestException('Manuscript status must be ACCEPTED By reviewer to be published');
+    }
 
-//     // Update manuscript status to published
-//     const updatedManuscript = await this.prisma.manuscript.update({
-//       where: { id: manuscriptId },
-//       data: {
-//         status: 'PUBLISHED',
-//         isPublished: true,
-//         updatedAt: new Date(),
-//         updatedBy: userId
-//       }
-//     });
+    // Update manuscript status to published
+    const updatedManuscript = await this.prisma.manuscript.update({
+      where: { id: manuscriptId },
+      data: {
+        status: 'PUBLISHED',
+        isPublished: true,
+        updatedAt: new Date(),
+        updatedBy: userId
+      }
+    });
 
-//     // Create a Publication record
-//     await this.prisma.publication.create({
-//       data: {
-//         title: title,
-//         abstract: abstract,
-//         keywords: keywords,
-//         userId: userId,
-//         formartedManuscript: formattedManuscript ,
-//         manuscriptid: manuscriptId
-//       }
-//     });
+    // Create a Publication record
+    await this.prisma.publication.create({
+      data: {
+        title: title,
+        abstract: abstract,
+        keywords: keywords,
+        userId: userId,
+        formartedManuscript: formattedManuscript ,
+        manuscriptid: manuscriptId
+      }
+    });
 
-//     return updatedManuscript;
-//   }
+    return updatedManuscript;
+  }
 
 
 }
