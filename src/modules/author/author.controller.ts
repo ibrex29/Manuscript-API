@@ -38,7 +38,7 @@ export class AuthorController {
     return this.authorService.getSubmittedManuscriptsForLoggedInUser(req.user?.userId);
   }
 
-  // @Role(UserType.AUTHOR)
+  @Role(UserType.AUTHOR)
   @Get('review-message')
   @ApiOperation({ summary: 'Get reviews for manuscripts submitted by the logged-in author' })
   @ApiResponse({
@@ -102,5 +102,10 @@ export class AuthorController {
     return this.authorService.createReply(req.user?.userId, createReplyDto);
   }
 
+ @Role(UserType.AUTHOR)
+  @Get('status-counts')
+  async getManuscriptCounts( @Request() req){
+    return this.authorService.getManuscriptCountsForAuthor(req.user?.userId);
+  }
 
 }

@@ -8,13 +8,13 @@ import { CreateEditorDto } from './dtos/create-editor.dto';
 import { AssignReviewerDto } from './dtos/assign-reviewer.dto';
 import { UserType } from '../user/types/user.type';
 import { RolesGuard } from '../auth/guard/role.guard';
-import { PublishManuscriptDto } from './dtos/publish-manuscript.dto';
 import { AssignRoleByNameDto } from './dtos/assign-role-by-name.dto';
+import { PublishManuscriptDto } from './dtos/publish-manuscript.dto';
+
 
 @ApiBearerAuth() 
 @ApiTags('editor')
 @UseGuards(RolesGuard)
-
 @Controller({ path: 'editor', version: '1' }) // Versioning with v1
 export class EditorController {
   constructor(private editorService: EditorService) {}
@@ -56,7 +56,7 @@ export class EditorController {
     return this.editorService.listSubmittedManuscripts();
   }
 
-  // @Role(UserType.EDITOR)
+  @Role(UserType.EDITOR)
   @Public()
   @Get('assigned')
   @ApiOperation({ summary: 'Get all assigned manuscripts' })
@@ -64,23 +64,25 @@ export class EditorController {
     return this.editorService.getAllAssignedManuscripts();
   }
 
-  // @Role(UserType.EDITOR)
+  
   @Public()
+  @Role(UserType.EDITOR)
   @Get('unassigned')
   @ApiOperation({ summary: 'Get all unassigned manuscripts' })
   async getAllUnassignedManuscripts() {
     return this.editorService.getAllUnassignedManuscripts();
   }
 
-  @Role(UserType.EDITOR)
   @Get(':manuscriptId/details')
+  @Role(UserType.EDITOR)
   @ApiOperation({ summary: 'Get manuscript details with author, assigned reviewer, and reviews' })
   async getManuscriptDetails(@Param('manuscriptId') manuscriptId: string) {
     return this.editorService.getManuscriptDetails(manuscriptId);
   }
   
-  @Public()
+  // @Public()
   @Get('status/:status')
+  @Role(UserType.EDITOR)
   @ApiOperation({ summary: 'Get manuscripts by status' })
   @ApiResponse({
     status: 200,
@@ -93,28 +95,16 @@ export class EditorController {
   async getManuscriptsByStatus(@Param('status') status: Status) {
     return this.editorService.getManuscriptsByStatus(status);
   }
-  @Public()
+  // @Public()
   @Get("stat")
+  @Role(UserType.EDITOR)
   async getStatistics() {
     return this.editorService.getStatistics();
   }
 
-  @Public()
-  @Post('publish')
-  async publishManuscript(@Body() publishManuscriptDto: PublishManuscriptDto) {
-    const { manuscriptId } = publishManuscriptDto;
 
-    try {
-      const updatedManuscript = await this.editorService.publishManuscript(manuscriptId);
-      return updatedManuscript;
-    } catch (error) {
-      console.error('Error in publishManuscript controller:', error);
-      throw new HttpException('Could not publish manuscript.', HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-  }
-
-  @Role(UserType.ADMIN)
   @Post('assign-role-by-name')
+  @Role(UserType.EDITOR)
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Assign a role to a user by role name' })
   @ApiCreatedResponse({ description: 'The role has been successfully assigned to the user.' })
@@ -127,6 +117,18 @@ export class EditorController {
       console.error('Error in assignRoleByName controller:', error);
       throw new HttpException('Could not assign role.', HttpStatus.INTERNAL_SERVER_ERROR);
     }
+  }
+
+ 
+  @Post('publish')
+  @Role(UserType.EDITOR)  
+  @ApiOperation({ summary: 'Publish a manuscript' })
+  @ApiResponse({ status: 200, description: 'Manuscript published successfully.' })
+  @ApiResponse({ status: 400, description: 'Invalid input data or manuscript status not ACCEPTED.' })
+  async publishManuscript(
+  @Request() req,
+  @Body() publishManuscriptDto: PublishManuscriptDto) {
+    return this.editorService.publishManuscript(publishManuscriptDto, req.user?.userId);
   }
   
 }

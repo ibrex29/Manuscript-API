@@ -1,4 +1,4 @@
-import { ConflictException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable, InternalServerErrorException, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
 import { CreateEditorDto } from './dtos/create-editor.dto';
 import * as bcrypt from 'bcrypt';
@@ -6,6 +6,8 @@ import { AssignReviewerDto } from './dtos/assign-reviewer.dto';
 import { Manuscript, Status } from '@prisma/client';
 import { UserType } from '../user/types/user.type';
 import { AssignRoleByNameDto } from './dtos/assign-role-by-name.dto';
+import { PublishManuscriptDto } from './dtos/publish-manuscript.dto';
+
 
 
 @Injectable()
@@ -255,22 +257,22 @@ export class EditorService {
   }
 
 
-  async publishManuscript(manuscriptId: string,) {
-    try {
-      // Update the manuscript to be published and associate it with a publication
-      const updatedManuscript = await this.prisma.manuscript.update({
-        where: { id: manuscriptId },
-        data: {
-          isPublished: true,
-          status:"PUBLISHED",
-        },
-      });
-      return updatedManuscript;
-    } catch (error) {
-      console.error('Error publishing manuscript:', error);
-      throw new Error('Could not publish manuscript.');
-    }
-  }
+  // async publishsManuscript(manuscriptId: string,) {
+  //   try {
+  //     // Update the manuscript to be published and associate it with a publication
+  //     const updatedManuscript = await this.prisma.manuscript.update({
+  //       where: { id: manuscriptId },
+  //       data: {
+  //         isPublished: true,
+  //         status:"PUBLISHED",
+  //       },
+  //     });
+  //     return updatedManuscript;
+  //   } catch (error) {
+  //     console.error('Error publishing manuscript:', error);
+  //     throw new Error('Could not publish manuscript.');
+  //   }
+  // }
 
   async getRoleIdByName(roleName: string): Promise<string> {
     const role = await this.prisma.role.findUnique({
@@ -298,5 +300,59 @@ export class EditorService {
       },
     });
   }
+
+
+  async publishManuscript(publishManuscriptDto: PublishManuscriptDto, userId: string) {
+    const { manuscriptId, title, abstract, keywords, formattedManuscript } = publishManuscriptDto;
+    // // // Validate if the user is an editor
+    // const editor = await this.prisma.editor.findUnique({
+    //   where: { userId },
+    // });
+
+    // if (!editor) {
+    //   throw new UnauthorizedException('User is not an editor');
+    // }
+
+    // const editorId = editor.id;
+
+    // Fetch the manuscript to check its status
+    const manuscript = await this.prisma.manuscript.findUnique({
+      where: { id: manuscriptId }
+    });
+
+    if (!manuscript) {
+      throw new BadRequestException('Manuscript not found');
+    }
+
+    if (manuscript.status !== 'ACCEPTED') {
+      throw new BadRequestException('Manuscript status must be ACCEPTED By reviewer to be published');
+    }
+
+    // Update manuscript status to published
+    const updatedManuscript = await this.prisma.manuscript.update({
+      where: { id: manuscriptId },
+      data: {
+        status: 'PUBLISHED',
+        isPublished: true,
+        updatedAt: new Date(),
+        updatedBy: userId
+      }
+    });
+
+    // Create a Publication record
+    await this.prisma.publication.create({
+      data: {
+        title: title,
+        abstract: abstract,
+        keywords: keywords,
+        userId: userId,
+        formartedManuscript: formattedManuscript ,
+        manuscriptid: manuscriptId
+      }
+    });
+
+    return updatedManuscript;
+  }
+
 
 }

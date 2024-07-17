@@ -1,6 +1,6 @@
 // src/module/author/author.service.ts
 
-import { ConflictException, ForbiddenException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { ConflictException, ForbiddenException, Injectable, InternalServerErrorException, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { Prisma, Author, Reply, Review } from '@prisma/client';
 import { PrismaService } from 'prisma/prisma.service';
 import { CreateAuthorDto } from './dtos/create-author.dto';
@@ -198,5 +198,63 @@ export class AuthorService {
 
     return this.getSubmittedManuscriptsByAuthor(author.id);
   }
+
+
+  async getManuscriptCountsForAuthor(userId: string) {
+    
+    // Validate if the user is an author
+    const author = await this.prisma.author.findUnique({
+      where: { userId },
+    });
+
+    if (!author) {
+      throw new UnauthorizedException('User is not an author');
+    }
+
+    const submittedCount = await this.prisma.manuscript.count({
+      where: {
+        authorId: author.id,
+        status: 'SUBMITTED',
+      },
+    });
+
+    const underReviewCount = await this.prisma.manuscript.count({
+      where: {
+        authorId: author.id,
+        status: 'UNDER_REVIEW',
+      },
+    });
+
+    const acceptedCount = await this.prisma.manuscript.count({
+      where: {
+        authorId: author.id,
+        status: 'ACCEPTED',
+      },
+    });
+
+    const rejectedCount = await this.prisma.manuscript.count({
+      where: {
+        authorId: author.id,
+        status: 'REJECTED',
+      },
+    });
+
+    const publishedCount = await this.prisma.manuscript.count({
+      where: {
+        authorId: author.id,
+        status: 'PUBLISHED',
+      },
+    });
+
+    return {
+      submittedCount,
+      underReviewCount,
+      acceptedCount,
+      rejectedCount,
+      publishedCount,
+    };
+  }
+
+  
   
 }
