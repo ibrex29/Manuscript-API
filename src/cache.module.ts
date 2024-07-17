@@ -7,7 +7,7 @@ import { redisStore } from 'cache-manager-redis-store';
   imports: [
     CacheModule.registerAsync({
       isGlobal: true,
-      imports: [ConfigModule], // No need to call ConfigModule.forRoot again
+      imports: [ConfigModule], 
       inject: [ConfigService],
       useFactory: async (configService: ConfigService) => {
         const isActive = ['true', '1', 'yes'].includes(
