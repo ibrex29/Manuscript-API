@@ -135,49 +135,49 @@ export class EditorService {
     }
     
 
-    async assignManuscriptToReviewer(dto: AssignReviewerDto) {
-      const { manuscriptId, reviewerId, reviewDueDate } = dto;
+    // async assignManuscriptToReviewer(dto: AssignReviewerDto) {
+    //   const { manuscriptId, reviewerId, reviewDueDate } = dto;
     
-      // Find the manuscript
-      const manuscript = await this.prisma.manuscript.findUnique({
-        where: { id: manuscriptId },
-      });
+    //   // Find the manuscript
+    //   const manuscript = await this.prisma.manuscript.findUnique({
+    //     where: { id: manuscriptId },
+    //   });
     
-      if (!manuscript) {
-        throw new NotFoundException(`Manuscript with ID ${manuscriptId} not found`);
-      }
+    //   if (!manuscript) {
+    //     throw new NotFoundException(`Manuscript with ID ${manuscriptId} not found`);
+    //   }
     
-      // Check if the manuscript is already assigned to a reviewer
-      if (manuscript.reviewerId) {
-        throw new ConflictException('Manuscript is already assigned to a reviewer');
-      }
+    //   // Check if the manuscript is already assigned to a reviewer
+    //   if (manuscript.reviewerId) {
+    //     throw new ConflictException('Manuscript is already assigned to a reviewer');
+    //   }
     
-       // Ensure the manuscript status is not "PUBLISHED"
-    if (manuscript.status === Status.PUBLISHED) {
-      throw new ConflictException('Cannot assign a reviewer to a published manuscript');
-    }
+    //    // Ensure the manuscript status is not "PUBLISHED"
+    // if (manuscript.status === Status.PUBLISHED) {
+    //   throw new ConflictException('Cannot assign a reviewer to a published manuscript');
+    // }
 
-      // Find the reviewer
-      const reviewer = await this.prisma.reviewer.findUnique({
-        where: { id: reviewerId },
-      });
+    //   // Find the reviewer
+    //   const reviewer = await this.prisma.reviewer.findUnique({
+    //     where: { id: reviewerId },
+    //   });
     
-      if (!reviewer) {
-        throw new NotFoundException(`Reviewer with ID ${reviewerId} not found`);
-      }
+    //   if (!reviewer) {
+    //     throw new NotFoundException(`Reviewer with ID ${reviewerId} not found`);
+    //   }
     
-      // Assign the manuscript to the reviewer and update the status to UNDER_REVIEW
-      const updatedManuscript = await this.prisma.manuscript.update({
-        where: { id: manuscriptId },
-        data: {
-          reviewerId: reviewerId,
-          status: 'UNDER_REVIEW',  
-          reviewDueDate : reviewDueDate,
-        },
-      });
+    //   // Assign the manuscript to the reviewer and update the status to UNDER_REVIEW
+    //   const updatedManuscript = await this.prisma.manuscript.update({
+    //     where: { id: manuscriptId },
+    //     data: {
+    //       reviewerId: reviewerId,
+    //       status: 'UNDER_REVIEW',  
+    //       reviewDueDate : reviewDueDate,
+    //     },
+    //   });
     
-      return updatedManuscript;
-    }
+    //   return updatedManuscript;
+    // }
     
       async listSubmittedManuscripts(): Promise<Manuscript[]> {
         try {

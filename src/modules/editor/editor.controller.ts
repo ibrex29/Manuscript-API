@@ -38,15 +38,15 @@ export class EditorController {
     return this.editorService.createReviewer(createReviewerDto);
   }
   
-  // @Public()
-  @Post('assign-reviewer')
-  @Role(UserType.EDITOR)  
-  @ApiOperation({ summary: 'Assign a reviewer to a manuscript' })
-  @ApiCreatedResponse({ description: 'The reviewer has been successfully assigned to the manuscript.' })
-  @ApiBadRequestResponse({ description: 'Invalid data provided or reviewer already assigned.' })
-  async assignReviewer(@Body() assignReviewerDto: AssignReviewerDto) {
-    return this.editorService.assignManuscriptToReviewer(assignReviewerDto);
-  }
+  // // @Public()
+  // @Post('assign-reviewer')
+  // @Role(UserType.EDITOR)  
+  // @ApiOperation({ summary: 'Assign a reviewer to a manuscript' })
+  // @ApiCreatedResponse({ description: 'The reviewer has been successfully assigned to the manuscript.' })
+  // @ApiBadRequestResponse({ description: 'Invalid data provided or reviewer already assigned.' })
+  // async assignReviewer(@Body() assignReviewerDto: AssignReviewerDto) {
+  //   return this.editorService.assignManuscriptToReviewer(assignReviewerDto);
+  // }
 
 
   // @Public()
