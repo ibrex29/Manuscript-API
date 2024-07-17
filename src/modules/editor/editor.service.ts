@@ -173,8 +173,8 @@ export class EditorService {
           reviewerId: reviewerId,
           status: 'UNDER_REVIEW',
           // updatedAt: new Date(),
-        //   assigmentDate: assigmentDate || new Date(),
-        //   reviewDueDate : reviewDueDate,
+          assigmentDate: new Date(),
+          reviewDueDate : reviewDueDate,
         },
       });
     
