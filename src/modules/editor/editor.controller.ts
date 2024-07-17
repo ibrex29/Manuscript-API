@@ -30,13 +30,13 @@ export class EditorController {
     return this.editorService.createEditor(createEditorDto);
   }
 
-  // @Role(UserType.EDITOR)
-  // @Post("reviewer")
-  // @HttpCode(HttpStatus.CREATED)
-  // @ApiOperation({ summary: 'Create a new reviewer' })
-  // create(@Body() createReviewerDto: CreateReviewerDto) {
-  //   return this.editorService.createReviewer(createReviewerDto);
-  // }
+  @Role(UserType.EDITOR)
+  @Post("reviewer")
+  @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({ summary: 'Create a new reviewer' })
+  create(@Body() createReviewerDto: CreateReviewerDto) {
+    return this.editorService.createReviewer(createReviewerDto);
+  }
   
   // @Public()
   @Post('assign-reviewer')

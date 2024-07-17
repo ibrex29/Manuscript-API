@@ -66,48 +66,48 @@ export class EditorService {
       return creatededitor;
     }
 
-  //   async createReviewer(createReviewerDto: CreateReviewerDto) {
-  //     const { email, password } = createReviewerDto;
+    async createReviewer(createReviewerDto: CreateReviewerDto) {
+      const { email, password } = createReviewerDto;
   
-  //     const reviewerRole = await this.prisma.role.findUnique({
-  //       where: { roleName: 'reviewer' }, 
-  //     });
+      const reviewerRole = await this.prisma.role.findUnique({
+        where: { roleName: 'reviewer' }, 
+      });
   
-  //     if (!reviewerRole) {
-  //       throw new ConflictException('Author role not found');
-  //     }
+      if (!reviewerRole) {
+        throw new ConflictException('Author role not found');
+      }
   
-  //     // Check if the email already exists
-  //     const existingUser = await this.prisma.user.findUnique({
-  //       where: { email },
-  //     });
+      // Check if the email already exists
+      const existingUser = await this.prisma.user.findUnique({
+        where: { email },
+      });
   
-  //     if (existingUser) {
-  //       throw new ConflictException('Email address already exists');
-  //     }
-  //      // Hash the password
-  //      const hashedPassword = await bcrypt.hash(password, 10);
+      if (existingUser) {
+        throw new ConflictException('Email address already exists');
+      }
+       // Hash the password
+       const hashedPassword = await bcrypt.hash(password, 10);
   
   
-  //     // Create the user 
-  //     const createdUser = await this.prisma.user.create({
-  //       data: {
-  //         email,
-  //         firstName : "",
-  //         lastName: "",
-  //         createdBy : "",
-  //         createdAt: new Date().toISOString(),
-  //         updatedBy: " ",
-  //         password:hashedPassword,
-  //         roles: {
-  //           connect: { id: reviewerRole.id }, 
-  //         },
-  //       },
-  //     });
+      // Create the user 
+      const createdUser = await this.prisma.user.create({
+        data: {
+          email,
+          firstName : "",
+          lastName: "",
+          createdBy : "",
+          createdAt: new Date().toISOString(),
+          updatedBy: " ",
+          password:hashedPassword,
+          roles: {
+            connect: { id: reviewerRole.id }, 
+          },
+        },
+      });
 
-  //     return createdUser
+      return createdUser
   
-  // }
+  }
 
     async getAllAuthors() {
       return this.prisma.author.findMany({
@@ -172,7 +172,6 @@ export class EditorService {
         data: {
           reviewerId: reviewerId,
           status: 'UNDER_REVIEW',  
-          assigmentDate:new Date(),
           reviewDueDate : reviewDueDate,
         },
       });

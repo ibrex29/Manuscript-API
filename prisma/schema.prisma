@@ -66,7 +66,7 @@ model Manuscript {
   manuscriptLink    String
   proofofPayment    String
   isPublished       Boolean
-  assigmentDate     DateTime?
+  assigmentDate     DateTime?  @default(now())
   reviewDueDate     DateTime?
   reviewerId        String?
   Author            Author    @relation(fields: [authorId], references: [id])
