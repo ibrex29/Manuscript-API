@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "Manuscript" ALTER COLUMN "assigmentDate" SET DEFAULT CURRENT_TIMESTAMP;
