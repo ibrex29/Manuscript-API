@@ -14,7 +14,6 @@ import { CreateReviewerDto } from '../reviewer/dto/create-reviewer.dto';
 @Injectable()
 export class EditorService {
     constructor(private prisma: PrismaService) {}
-
  
     async createEditor(createAuthorDto: CreateEditorDto) {
       const { email, firstName, lastName, password, affiliation, expertiseArea } = createAuthorDto;
@@ -67,49 +66,48 @@ export class EditorService {
       return creatededitor;
     }
 
-    async createReviewer(createReviewerDto: CreateReviewerDto) {
-      const { email,  password } = createReviewerDto;
+  //   async createReviewer(createReviewerDto: CreateReviewerDto) {
+  //     const { email, password } = createReviewerDto;
   
-      // Find the author role
-      const reviewerRole = await this.prisma.role.findUnique({
-        where: { roleName: 'reviewer' }, 
-      });
+  //     const reviewerRole = await this.prisma.role.findUnique({
+  //       where: { roleName: 'reviewer' }, 
+  //     });
   
-      if (!reviewerRole) {
-        throw new ConflictException('Author role not found');
-      }
+  //     if (!reviewerRole) {
+  //       throw new ConflictException('Author role not found');
+  //     }
   
-      // Check if the email already exists
-      const existingUser = await this.prisma.user.findUnique({
-        where: { email },
-      });
+  //     // Check if the email already exists
+  //     const existingUser = await this.prisma.user.findUnique({
+  //       where: { email },
+  //     });
   
-      if (existingUser) {
-        throw new ConflictException('Email address already exists');
-      }
-       // Hash the password
-       const hashedPassword = await bcrypt.hash(password, 10);
+  //     if (existingUser) {
+  //       throw new ConflictException('Email address already exists');
+  //     }
+  //      // Hash the password
+  //      const hashedPassword = await bcrypt.hash(password, 10);
   
   
-      // Create the user 
-      const createdUser = await this.prisma.user.create({
-        data: {
-          email,
-          firstName : "",
-          lastName: "",
-          createdBy : "",
-          createdAt: new Date().toISOString(),
-          updatedBy: " ",
-          password:hashedPassword,
-          roles: {
-            connect: { id: reviewerRole.id }, // Connect user to the author role
-          },
-        },
-      });
+  //     // Create the user 
+  //     const createdUser = await this.prisma.user.create({
+  //       data: {
+  //         email,
+  //         firstName : "",
+  //         lastName: "",
+  //         createdBy : "",
+  //         createdAt: new Date().toISOString(),
+  //         updatedBy: " ",
+  //         password:hashedPassword,
+  //         roles: {
+  //           connect: { id: reviewerRole.id }, 
+  //         },
+  //       },
+  //     });
 
-      return createdUser
+  //     return createdUser
   
-  }
+  // }
 
     async getAllAuthors() {
       return this.prisma.author.findMany({
@@ -173,7 +171,7 @@ export class EditorService {
         where: { id: manuscriptId },
         data: {
           reviewerId: reviewerId,
-          status: 'UNDER_REVIEW',  // Update the status to UNDER_REVIEW
+          status: 'UNDER_REVIEW',  
           assigmentDate:new Date().toISOString(),
           reviewDueDate : reviewDueDate,
         },
@@ -366,47 +364,47 @@ export class EditorService {
   }
 
 
-  async publishManuscript(publishManuscriptDto: PublishManuscriptDto, userId: string) {
-    const { manuscriptId, title, abstract, keywords, formattedManuscript } = publishManuscriptDto;
+//   async publishManuscript(publishManuscriptDto: PublishManuscriptDto, userId: string) {
+//     const { manuscriptId, title, abstract, keywords, formattedManuscript } = publishManuscriptDto;
     
-    // Fetch the manuscript to check its status
-    const manuscript = await this.prisma.manuscript.findUnique({
-      where: { id: manuscriptId }
-    });
+//     // Fetch the manuscript to check its status
+//     const manuscript = await this.prisma.manuscript.findUnique({
+//       where: { id: manuscriptId }
+//     });
 
-    if (!manuscript) {
-      throw new BadRequestException('Manuscript not found');
-    }
+//     if (!manuscript) {
+//       throw new BadRequestException('Manuscript not found');
+//     }
 
-    if (manuscript.status !== 'ACCEPTED') {
-      throw new BadRequestException('Manuscript status must be ACCEPTED By reviewer to be published');
-    }
+//     if (manuscript.status !== 'ACCEPTED') {
+//       throw new BadRequestException('Manuscript status must be ACCEPTED By reviewer to be published');
+//     }
 
-    // Update manuscript status to published
-    const updatedManuscript = await this.prisma.manuscript.update({
-      where: { id: manuscriptId },
-      data: {
-        status: 'PUBLISHED',
-        isPublished: true,
-        updatedAt: new Date(),
-        updatedBy: userId
-      }
-    });
+//     // Update manuscript status to published
+//     const updatedManuscript = await this.prisma.manuscript.update({
+//       where: { id: manuscriptId },
+//       data: {
+//         status: 'PUBLISHED',
+//         isPublished: true,
+//         updatedAt: new Date(),
+//         updatedBy: userId
+//       }
+//     });
 
-    // Create a Publication record
-    await this.prisma.publication.create({
-      data: {
-        title: title,
-        abstract: abstract,
-        keywords: keywords,
-        userId: userId,
-        formartedManuscript: formattedManuscript ,
-        manuscriptid: manuscriptId
-      }
-    });
+//     // Create a Publication record
+//     await this.prisma.publication.create({
+//       data: {
+//         title: title,
+//         abstract: abstract,
+//         keywords: keywords,
+//         userId: userId,
+//         formartedManuscript: formattedManuscript ,
+//         manuscriptid: manuscriptId
+//       }
+//     });
 
-    return updatedManuscript;
-  }
+//     return updatedManuscript;
+//   }
 
 
 }
