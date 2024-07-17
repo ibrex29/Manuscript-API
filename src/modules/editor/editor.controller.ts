@@ -20,18 +20,18 @@ export class EditorController {
   constructor(private editorService: EditorService) {}
 
   @Public()
-  @Post()
+  @Post("editor")
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: 'Create a new editor' })
   @ApiCreatedResponse({ description: 'The editor has been successfully created.' })
   @ApiBadRequestResponse({ description: 'Invalid data provided.' })
   @ApiBody({ type: CreateEditorDto })
   async createAuthor(@Body() createEditorDto: CreateEditorDto): Promise<Editor> {
-    return this.editorService.createReviewer(createEditorDto);
+    return this.editorService.createEditor(createEditorDto);
   }
 
   @Role(UserType.EDITOR)
-  @Post()
+  @Post("reviewer")
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: 'Create a new reviewer' })
   create(@Body() createReviewerDto: CreateReviewerDto) {

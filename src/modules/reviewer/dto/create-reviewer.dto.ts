@@ -6,13 +6,13 @@ import { IsNotEmpty, IsEmail, isStrongPassword, IsString, MinLength, Matches } f
 
 export class CreateReviewerDto {
 
-  @ApiProperty({ example: 'John', description: 'The first name of the author' })
-  @IsNotEmpty()
-  firstName: string;
+  // @ApiProperty({ example: 'John', description: 'The first name of the author' })
+  // @IsNotEmpty()
+  // firstName: string;
 
-  @ApiProperty({ example: 'Doe', description: 'The last name of the author' })
-  @IsNotEmpty()
-  lastName: string;
+  // @ApiProperty({ example: 'Doe', description: 'The last name of the author' })
+  // @IsNotEmpty()
+  // lastName: string;
 
   @ApiProperty({ example: 'john.doe@example.com', description: 'The email address of the author' })
   @IsNotEmpty()
@@ -28,12 +28,12 @@ export class CreateReviewerDto {
   })
   password : string;
 
-  @ApiProperty({ example: 'University of Example', description: 'The affiliation of the author' })
-  @IsNotEmpty()
-  affiliation: string;
+  // @ApiProperty({ example: 'University of Example', description: 'The affiliation of the author' })
+  // @IsNotEmpty()
+  // affiliation: string;
 
-  @ApiProperty({ example: 'University of Example', description: 'The affiliation of the author' })
-  @IsNotEmpty()
-  expertiseArea: string;
+  // @ApiProperty({ example: 'University of Example', description: 'The affiliation of the author' })
+  // @IsNotEmpty()
+  // expertiseArea: string;
   
 }

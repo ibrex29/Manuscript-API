@@ -68,7 +68,7 @@ export class EditorService {
     }
 
     async createReviewer(createReviewerDto: CreateReviewerDto) {
-      const { email, firstName, lastName, password,expertiseArea } = createReviewerDto;
+      const { email,  password } = createReviewerDto;
   
       // Find the author role
       const reviewerRole = await this.prisma.role.findUnique({
@@ -91,12 +91,12 @@ export class EditorService {
        const hashedPassword = await bcrypt.hash(password, 10);
   
   
-      // Create the user and reviewer profile
+      // Create the user 
       const createdUser = await this.prisma.user.create({
         data: {
           email,
-          firstName,
-          lastName,
+          firstName : "",
+          lastName: "",
           createdBy : "",
           createdAt: new Date().toISOString(),
           updatedBy: " ",
@@ -106,16 +106,9 @@ export class EditorService {
           },
         },
       });
+
+      return createdUser
   
-      
-      const createdreviewer = await this.prisma.reviewer.create({
-        data: {
-          userId: createdUser.id,
-          expertiseArea,
-        },
-      });
-  
-      return createdreviewer;
   }
 
     async getAllAuthors() {
@@ -145,7 +138,7 @@ export class EditorService {
     
 
     async assignManuscriptToReviewer(dto: AssignReviewerDto) {
-      const { manuscriptId, reviewerId } = dto;
+      const { manuscriptId, reviewerId, reviewDueDate } = dto;
     
       // Find the manuscript
       const manuscript = await this.prisma.manuscript.findUnique({
@@ -181,6 +174,8 @@ export class EditorService {
         data: {
           reviewerId: reviewerId,
           status: 'UNDER_REVIEW',  // Update the status to UNDER_REVIEW
+          assigmentDate:new Date().toISOString(),
+          reviewDueDate : reviewDueDate,
         },
       });
     
