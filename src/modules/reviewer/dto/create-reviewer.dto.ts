@@ -19,7 +19,7 @@ export class CreateReviewerDto {
   @IsEmail()
   email: string;
 
-  @ApiProperty({ example: 'fdsxb132456', description: 'The password of the author' })
+  @ApiProperty({ example: 'Fdsxb132456', description: 'The password of the author' })
   @IsNotEmpty()
   @IsString()
   @MinLength(8) // Example minimum length, adjust as needed

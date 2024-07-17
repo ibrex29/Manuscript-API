@@ -253,5 +253,56 @@ if (!reviewer) {
 
   return updatedManuscript;
 }
+
+async updateReviewerProfile(userId: string, updateReviewerDto: UpdateReviewerDto) {
+  const { firstName, lastName, email, password, affiliation, expertiseArea } = updateReviewerDto;
+
+  // Check if the user exists
+  const user = await this.prisma.user.findUnique({
+    where: { id: userId },
+  });
+
+  if (!user) {
+    throw new NotFoundException(`User with ID ${userId} not found`);
+  }
+
+  // Check if the email already exists
+  if (email !== user.email) {
+    const existingUser = await this.prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (existingUser) {
+      throw new ConflictException('Email address already exists');
+    }
+  }
+
+  // Hash the new password if provided
+  let hashedPassword = user.password;
+  if (password) {
+    hashedPassword = await bcrypt.hash(password, 10);
+  }
+
+  // Update the user profile
+  const updatedUser = await this.prisma.user.update({
+    where: { id: userId },
+    data: {
+      firstName,
+      lastName,
+      email,
+      password: hashedPassword,
+    },
+  });
+
+  // Update the reviewer profile
+  const updatedReviewer = await this.prisma.reviewer.update({
+    where: { userId: userId },
+    data: {
+      expertiseArea,
+    },
+  });
+
+  return { updatedUser, updatedReviewer };
+}
 }
 

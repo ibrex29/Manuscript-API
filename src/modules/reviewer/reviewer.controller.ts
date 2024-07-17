@@ -4,8 +4,7 @@ import {
   Post,
   Body,
   Param,
-  HttpCode,
-  HttpStatus,
+  Patch,
   UseGuards,
   Request
 } from '@nestjs/common';
@@ -25,6 +24,7 @@ import { UserType } from 'src/modules/user/types/user.type';
 import { CreateReviewDto } from './dto/create-review.dto';
 import { AcceptRejectManuscriptDto } from './dto/accept-reject-manuscript.dto';
 import { CreateReviewerDto } from './dto/create-reviewer.dto';
+import { UpdateReviewerDto } from './dto/update-reviewer.dto';
 
 @ApiBearerAuth()
 @ApiTags('reviewer')
@@ -34,6 +34,15 @@ import { CreateReviewerDto } from './dto/create-reviewer.dto';
 export class ReviewerController {
   constructor(private readonly reviewerService: ReviewerService) {}
 
+
+  @Patch('reviewers/:userId')
+  async updateReviewerProfile(
+    @Request() req, 
+    @Body() updateReviewerDto: UpdateReviewerDto,
+
+  ) {
+    return this.reviewerService.updateReviewerProfile(req.user?.userId, updateReviewerDto);
+  }
 
   @Role(UserType.REVIEWER)
   @Get('all-review')
