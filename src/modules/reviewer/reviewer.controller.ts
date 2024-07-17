@@ -34,22 +34,8 @@ import { CreateReviewerDto } from './dto/create-reviewer.dto';
 export class ReviewerController {
   constructor(private readonly reviewerService: ReviewerService) {}
 
-  @Role(UserType.EDITOR)
-  @Post()
-  @HttpCode(HttpStatus.CREATED)
-  @ApiOperation({ summary: 'Create a new reviewer' })
-  create(@Body() createReviewerDto: CreateReviewerDto) {
-    return this.reviewerService.createReviewer(createReviewerDto);
-  }
 
-  @Public()
-  @Get('')
-  @ApiOperation({ summary: 'Find all reviewers' })
-  findAll() {
-    return this.reviewerService.findAll();
-  }
-
-  @Public()
+  @Role(UserType.REVIEWER)
   @Get('all-review')
   @ApiOperation({ summary: 'Get all reviews' })
   async getAllReviews() {

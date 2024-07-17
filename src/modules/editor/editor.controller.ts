@@ -1,8 +1,7 @@
 import { Controller, Get, Post, Put, Delete, Param, Body, Version, HttpStatus, HttpCode, Request, UseGuards, HttpException } from '@nestjs/common';
 import { EditorService } from './editor.service';
-import { Prisma, Author, Editor, Manuscript, Status } from '@prisma/client';
-import { ApiTags, ApiBearerAuth, ApiOperation, ApiParam, ApiResponse, ApiCreatedResponse, ApiOkResponse, ApiNotFoundResponse, ApiBadRequestResponse, ApiBody } from '@nestjs/swagger';
-
+import { Editor, Manuscript, Status } from '@prisma/client';
+import { ApiTags, ApiBearerAuth, ApiOperation, ApiResponse, ApiCreatedResponse, ApiOkResponse, ApiBadRequestResponse, ApiBody } from '@nestjs/swagger';
 import { Public, Role } from 'src/common/constants/routes.constant';
 import { CreateEditorDto } from './dtos/create-editor.dto';
 import { AssignReviewerDto } from './dtos/assign-reviewer.dto';
@@ -10,12 +9,13 @@ import { UserType } from '../user/types/user.type';
 import { RolesGuard } from '../auth/guard/role.guard';
 import { AssignRoleByNameDto } from './dtos/assign-role-by-name.dto';
 import { PublishManuscriptDto } from './dtos/publish-manuscript.dto';
+import { CreateReviewerDto } from '../reviewer/dto/create-reviewer.dto';
 
 
 @ApiBearerAuth() 
 @ApiTags('editor')
 @UseGuards(RolesGuard)
-@Controller({ path: 'editor', version: '1' }) // Versioning with v1
+@Controller({ path: 'editor', version: '1' }) 
 export class EditorController {
   constructor(private editorService: EditorService) {}
 
@@ -26,13 +26,21 @@ export class EditorController {
   @ApiCreatedResponse({ description: 'The editor has been successfully created.' })
   @ApiBadRequestResponse({ description: 'Invalid data provided.' })
   @ApiBody({ type: CreateEditorDto })
-  async createAuthor(@Body() createAuthorDto: CreateEditorDto): Promise<Editor> {
-    return this.editorService.createAuthor(createAuthorDto);
+  async createAuthor(@Body() createEditorDto: CreateEditorDto): Promise<Editor> {
+    return this.editorService.createReviewer(createEditorDto);
+  }
+
+  @Role(UserType.EDITOR)
+  @Post()
+  @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({ summary: 'Create a new reviewer' })
+  create(@Body() createReviewerDto: CreateReviewerDto) {
+    return this.editorService.createReviewer(createReviewerDto);
   }
   
-  @Public()
+  // @Public()
   @Post('assign-reviewer')
-  // @Role(UserType.EDITOR)  
+  @Role(UserType.EDITOR)  
   @ApiOperation({ summary: 'Assign a reviewer to a manuscript' })
   @ApiCreatedResponse({ description: 'The reviewer has been successfully assigned to the manuscript.' })
   @ApiBadRequestResponse({ description: 'Invalid data provided or reviewer already assigned.' })
@@ -41,7 +49,8 @@ export class EditorController {
   }
 
 
-  @Public()
+  // @Public()
+  @Role(UserType.EDITOR) 
   @Get("list-all-authors")
   @ApiOperation({ summary: 'Get all authors' })
   @ApiOkResponse({ description: 'The list of authors has been successfully retrieved.' })
@@ -49,7 +58,16 @@ export class EditorController {
     return this.editorService.getAllAuthors();
   }
 
-  @Public()
+  // @Public()
+  @Role(UserType.EDITOR) 
+  @Get('')
+  @ApiOperation({ summary: 'Find all reviewers' })
+  findAll() {
+    return this.editorService.getAllReviewers();
+  }
+
+  // @Public()
+  @Role(UserType.EDITOR) 
   @Get('submitted')
   @ApiOperation({ summary: 'List all submitted manuscripts' })
   async listSubmitted(): Promise<Manuscript[]> {
@@ -57,7 +75,7 @@ export class EditorController {
   }
 
   @Role(UserType.EDITOR)
-  @Public()
+  // @Public()
   @Get('assigned')
   @ApiOperation({ summary: 'Get all assigned manuscripts' })
   async getAllAssignedManuscripts() {
@@ -65,7 +83,7 @@ export class EditorController {
   }
 
   
-  @Public()
+  // @Public()
   @Role(UserType.EDITOR)
   @Get('unassigned')
   @ApiOperation({ summary: 'Get all unassigned manuscripts' })

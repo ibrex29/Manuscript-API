@@ -7,6 +7,7 @@ import { Manuscript, Status } from '@prisma/client';
 import { UserType } from '../user/types/user.type';
 import { AssignRoleByNameDto } from './dtos/assign-role-by-name.dto';
 import { PublishManuscriptDto } from './dtos/publish-manuscript.dto';
+import { CreateReviewerDto } from '../reviewer/dto/create-reviewer.dto';
 
 
 
@@ -15,7 +16,7 @@ export class EditorService {
     constructor(private prisma: PrismaService) {}
 
  
-    async createAuthor(createAuthorDto: CreateEditorDto) {
+    async createEditor(createAuthorDto: CreateEditorDto) {
       const { email, firstName, lastName, password, affiliation, expertiseArea } = createAuthorDto;
   
       // Find the author role
@@ -65,6 +66,57 @@ export class EditorService {
   
       return creatededitor;
     }
+
+    async createReviewer(createReviewerDto: CreateReviewerDto) {
+      const { email, firstName, lastName, password,expertiseArea } = createReviewerDto;
+  
+      // Find the author role
+      const reviewerRole = await this.prisma.role.findUnique({
+        where: { roleName: 'reviewer' }, 
+      });
+  
+      if (!reviewerRole) {
+        throw new ConflictException('Author role not found');
+      }
+  
+      // Check if the email already exists
+      const existingUser = await this.prisma.user.findUnique({
+        where: { email },
+      });
+  
+      if (existingUser) {
+        throw new ConflictException('Email address already exists');
+      }
+       // Hash the password
+       const hashedPassword = await bcrypt.hash(password, 10);
+  
+  
+      // Create the user and reviewer profile
+      const createdUser = await this.prisma.user.create({
+        data: {
+          email,
+          firstName,
+          lastName,
+          createdBy : "",
+          createdAt: new Date().toISOString(),
+          updatedBy: " ",
+          password:hashedPassword,
+          roles: {
+            connect: { id: reviewerRole.id }, // Connect user to the author role
+          },
+        },
+      });
+  
+      
+      const createdreviewer = await this.prisma.reviewer.create({
+        data: {
+          userId: createdUser.id,
+          expertiseArea,
+        },
+      });
+  
+      return createdreviewer;
+  }
 
     async getAllAuthors() {
       return this.prisma.author.findMany({
@@ -195,6 +247,23 @@ export class EditorService {
     return manuscript;
   }
 
+  async getAllReviewers() {
+    return this.prisma.reviewer.findMany({
+      include: {
+        User: {
+          include: {
+            roles: {
+              select: {
+                roleName: true,  
+              },
+            },
+          },
+        },
+      },
+    });
+
+  }
+  
 
   async getManuscriptsByStatus(status: Status): Promise<{ count: number; manuscripts: Manuscript[] }> {
     const manuscripts = await this.prisma.manuscript.findMany({
