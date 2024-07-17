@@ -368,17 +368,7 @@ export class EditorService {
 
   async publishManuscript(publishManuscriptDto: PublishManuscriptDto, userId: string) {
     const { manuscriptId, title, abstract, keywords, formattedManuscript } = publishManuscriptDto;
-    // // // Validate if the user is an editor
-    // const editor = await this.prisma.editor.findUnique({
-    //   where: { userId },
-    // });
-
-    // if (!editor) {
-    //   throw new UnauthorizedException('User is not an editor');
-    // }
-
-    // const editorId = editor.id;
-
+    
     // Fetch the manuscript to check its status
     const manuscript = await this.prisma.manuscript.findUnique({
       where: { id: manuscriptId }
