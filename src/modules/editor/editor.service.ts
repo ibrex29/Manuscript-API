@@ -136,7 +136,7 @@ export class EditorService {
     
 
     async assignManuscriptToReviewer(dto: AssignReviewerDto) {
-      const { manuscriptId, reviewerId, reviewDueDate,assigmentDate } = dto;
+      const { manuscriptId, reviewerId, reviewDueDate } = dto;
     
       // Find the manuscript
       const manuscript = await this.prisma.manuscript.findUnique({
@@ -172,7 +172,6 @@ export class EditorService {
         data: {
           reviewerId: reviewerId,
           status: 'UNDER_REVIEW',
-          // updatedAt: new Date(),
           assigmentDate: new Date(),
           reviewDueDate : reviewDueDate,
         },
@@ -192,17 +191,17 @@ export class EditorService {
         }
       }
 
-      // New method to get all assigned manuscripts
+      
   async getAllAssignedManuscripts() {
     const manuscripts = await this.prisma.manuscript.findMany({
       where: { reviewerId: { not: null } },
-      include: { Reviewer: true },  // Include reviewer information
+      include: { Reviewer: true },  
     });
 
     return manuscripts;
   }
 
-  // New method to get all unassigned manuscripts
+
   async getAllUnassignedManuscripts() {
     const manuscripts = await this.prisma.manuscript.findMany({
       where: { reviewerId: null },
@@ -212,21 +211,21 @@ export class EditorService {
   }
   
   async getManuscriptDetails(manuscriptId: string) {
-    // Find the manuscript with its author, reviewer, and reviews
+ 
     const manuscript = await this.prisma.manuscript.findUnique({
       where: { id: manuscriptId },
       include: {
-        Author: true,  // Include the author who submitted the manuscript
-        Reviewer: {    // Include the reviewer assigned to the manuscript
+        Author: true,  
+        Reviewer: {    
           include: {
-            User: true  // Include the user details of the reviewer
+            User: true  
           }
         },
-        Review: {      // Include the reviews made on the manuscript
+        Review: {      
           include: {
             Reviewer: {
               include: {
-                User: true  // Include the user details of the reviewer who made the comments
+                User: true  
               }
             }
           }
@@ -392,7 +391,6 @@ export class EditorService {
       }
     });
 
-    // Create a Publication record
     await this.prisma.publication.create({
       data: {
         title: title,
@@ -400,12 +398,32 @@ export class EditorService {
         keywords: keywords,
         userId: userId,
         formartedManuscript: formattedManuscript ,
-        manuscriptid: manuscriptId
+        manuscriptId: manuscriptId
       }
     });
 
     return updatedManuscript;
   }
+  
+  async getAllPublishedManuscripts() {
+    const publishedManuscripts = await this.prisma.publication.findMany({
+      where: {
+        Manuscript: {
+          status: 'PUBLISHED',
+        },
+      },
+      select: {
+        id: true,
+        title: true,
+        abstract: true,
+        keywords: true,
+        userId: true,
+        formartedManuscript: true,
+        manuscriptId: true,
+      },
+    });
 
+    return publishedManuscripts;
+  }
 
 }

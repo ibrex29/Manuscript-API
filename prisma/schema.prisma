@@ -72,6 +72,7 @@ model Manuscript {
   Author            Author    @relation(fields: [authorId], references: [id])
   Reviewer          Reviewer? @relation(fields: [reviewerId], references: [id])
   Review            Review[]
+  Publication       Publication[]
 
 }
 
@@ -109,7 +110,9 @@ model Publication{
   userId  String?
   formartedManuscript String
   editor    User?  @relation(fields: [userId], references: [id])
-  manuscriptid  String
+  manuscriptId  String
+   Manuscript          Manuscript @relation(fields: [manuscriptId], references: [id])
+
 }
 
 model Permission {

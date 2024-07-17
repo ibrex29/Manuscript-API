@@ -137,7 +137,7 @@ export class EditorController {
     }
   }
 
- 
+
   @Post('publish')
   @Role(UserType.EDITOR)  
   @ApiOperation({ summary: 'Publish a manuscript' })
@@ -147,6 +147,12 @@ export class EditorController {
   @Request() req,
   @Body() publishManuscriptDto: PublishManuscriptDto) {
     return this.editorService.publishManuscript(publishManuscriptDto, req.user?.userId);
+  }
+
+  @Public()
+  @Get('manuscripts/published')
+  async getAllPublishedManuscripts() {
+    return this.editorService.getAllPublishedManuscripts();
   }
   
 }
