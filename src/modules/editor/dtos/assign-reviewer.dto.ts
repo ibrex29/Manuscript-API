@@ -24,7 +24,7 @@ export class AssignReviewerDto {
   })
 
   @IsOptional()
-  @IsDate()
+  @IsDateString()
   reviewDueDate?: Date;
 
 }

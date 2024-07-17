@@ -165,18 +165,15 @@ export class EditorService {
       if (!reviewer) {
         throw new NotFoundException(`Reviewer with ID ${reviewerId} not found`);
       }
-      // Convert reviewDueDate to a Date object if it is provided
-  const dueDate = reviewDueDate ? new Date(reviewDueDate) : undefined;
-
-    
+     
       // Assign the manuscript to the reviewer and update the status to UNDER_REVIEW
       const updatedManuscript = await this.prisma.manuscript.update({
         where: { id: manuscriptId },
         data: {
           reviewerId: reviewerId,
           status: 'UNDER_REVIEW',
-          assigmentDate:new Date(),
-          reviewDueDate : dueDate,
+          assigmentDate: new Date(),
+          reviewDueDate : reviewDueDate,
         },
       });
     
