@@ -172,7 +172,7 @@ export class EditorService {
         data: {
           reviewerId: reviewerId,
           status: 'UNDER_REVIEW',  
-          assigmentDate:new Date().toISOString(),
+          assigmentDate:new Date(),
           reviewDueDate : reviewDueDate,
         },
       });
