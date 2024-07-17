@@ -136,7 +136,7 @@ export class EditorService {
     
 
     async assignManuscriptToReviewer(dto: AssignReviewerDto) {
-      const { manuscriptId, reviewerId, reviewDueDate } = dto;
+      const { manuscriptId, reviewerId, reviewDueDate,assigmentDate } = dto;
     
       // Find the manuscript
       const manuscript = await this.prisma.manuscript.findUnique({
@@ -172,7 +172,7 @@ export class EditorService {
         data: {
           reviewerId: reviewerId,
           status: 'UNDER_REVIEW',
-          assigmentDate: new Date(),
+          assigmentDate: assigmentDate,
           reviewDueDate : reviewDueDate,
         },
       });

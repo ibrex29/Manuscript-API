@@ -16,7 +16,14 @@ export class AssignReviewerDto {
 
   @IsUUID()
   reviewerId: string;
+  @ApiProperty({
+    description: 'The date by which the review is due',
+    example: '2024-08-01T00:00:00.000Z',
+  })
 
+  @IsOptional()
+  @IsDateString()
+  assigmentDate?: Date;
 
   @ApiProperty({
     description: 'The date by which the review is due',
