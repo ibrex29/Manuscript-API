@@ -13,13 +13,13 @@ import { RolesGuard } from '../auth/guard/role.guard';
 @ApiBearerAuth() 
 @ApiTags('author')
 @UseGuards(RolesGuard)
-@Role(UserType.AUTHOR)
 @Controller({ path: 'author', version: '1' }) 
 export class AuthorController {
   constructor(private authorService: AuthorService) {}
 
+
   @Public()
-  @Post()
+  @Post("author")
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: 'Create a new author' })
   @ApiCreatedResponse({ description: 'The author has been successfully created.' })
@@ -29,14 +29,14 @@ export class AuthorController {
     return this.authorService.createAuthor(createAuthorDto);
   }
 
-
- 
+  @Role(UserType.AUTHOR)
   @Get('Sumitted-Manuscript')
   @ApiOperation({ summary: 'Get all manuscript submitted by logged in author' })
   async getSubmittedManuscriptsForLoggedInUser(
     @Request() req) {
     return this.authorService.getSubmittedManuscriptsForLoggedInUser(req.user?.userId);
   }
+
 
   @Role(UserType.AUTHOR)
   @Get('review-message')

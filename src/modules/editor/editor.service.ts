@@ -8,13 +8,14 @@ import { UserType } from '../user/types/user.type';
 import { AssignRoleByNameDto } from './dtos/assign-role-by-name.dto';
 import { PublishManuscriptDto } from './dtos/publish-manuscript.dto';
 import { CreateReviewerDto } from '../reviewer/dto/create-reviewer.dto';
+import { CreateAuthorDto } from '../author/dtos/create-author.dto';
 
 
 
 @Injectable()
 export class EditorService {
     constructor(private prisma: PrismaService) {}
- 
+
     async createEditor(createAuthorDto: CreateEditorDto) {
       const { email, firstName, lastName, password, affiliation, expertiseArea } = createAuthorDto;
   
@@ -298,15 +299,30 @@ export class EditorService {
         isPublished: true,
       },
     });
+  
+  }
+  async countSubmittedManuscript() {
+    return this.prisma.manuscript.count();
   }
 
+  async countApprovedManuscript() {
+    return this.prisma.manuscript.count({
+      where:{
+        status:"ACCEPTED"
+      }
+    });
+  }
+
+
   async getStatistics() {
-    const [reviewerCount, authorCount, assignedManuscriptCount, unassignedManuscriptCount, publishedManuscriptCount] = await Promise.all([
+    const [reviewerCount, authorCount, assignedManuscriptCount, unassignedManuscriptCount, publishedManuscriptCount ,submittedManuscriptcount,approvedManuscriptCount] = await Promise.all([
       this.countReviewers(),
       this.countAuthors(),
       this.countAssignedManuscripts(),
       this.countUnassignedManuscripts(),
-      this.countPublishedManuscripts()
+      this.countPublishedManuscripts(),
+      this.countSubmittedManuscript(),
+      this.countApprovedManuscript()
     ]);
 
     return {
@@ -315,6 +331,8 @@ export class EditorService {
       assignedManuscripts: assignedManuscriptCount,
       unassignedManuscripts: unassignedManuscriptCount,
       publishedManuscripts: publishedManuscriptCount,
+      submittedManuscriptcount :submittedManuscriptcount,
+      approvedManuscriptCount: approvedManuscriptCount
     };
   }
 

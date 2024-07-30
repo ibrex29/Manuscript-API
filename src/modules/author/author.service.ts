@@ -16,12 +16,12 @@ export class AuthorService {
   async createAuthor(createAuthorDto: CreateAuthorDto) {
     const { email, firstName, lastName, password, affiliation, expertiseArea } = createAuthorDto;
 
-    // // Find the author role
-    // const roleName = await this.prisma.role.findUnique({
-    //   where: { roleName: 'author' }, // Adjust roleName as per your Role enum or database value
-    // });
+    // Find the author role
+    const roleName = await this.prisma.role.findUnique({
+      where: { roleName: UserType.AUTHOR }, // Adjust roleName as per your Role enum or database value
+    });
 
-    const roleName= UserType.AUTHOR
+    // const roleName= UserType.AUTHOR
 
     if (!roleName) {
       throw new ConflictException('Author role not found');
@@ -49,7 +49,7 @@ export class AuthorService {
         createdBy: "",
         updatedBy: " ",
         roles: {
-          connect: { id: roleName }, // Connect user to the author role
+          connect: { id: roleName.id }, // Connect user to the author role
         },
       },
     });

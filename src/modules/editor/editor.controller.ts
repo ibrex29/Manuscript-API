@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Put, Delete, Param, Body, Version, HttpStatus, HttpCode, Request, UseGuards, HttpException } from '@nestjs/common';
 import { EditorService } from './editor.service';
-import { Editor, Manuscript, Status } from '@prisma/client';
+import { Author, Editor, Manuscript, Status } from '@prisma/client';
 import { ApiTags, ApiBearerAuth, ApiOperation, ApiResponse, ApiCreatedResponse, ApiOkResponse, ApiBadRequestResponse, ApiBody } from '@nestjs/swagger';
 import { Public, Role } from 'src/common/constants/routes.constant';
 import { CreateEditorDto } from './dtos/create-editor.dto';
@@ -26,7 +26,7 @@ export class EditorController {
   @ApiCreatedResponse({ description: 'The editor has been successfully created.' })
   @ApiBadRequestResponse({ description: 'Invalid data provided.' })
   @ApiBody({ type: CreateEditorDto })
-  async createAuthor(@Body() createEditorDto: CreateEditorDto): Promise<Editor> {
+  async createeditor(@Body() createEditorDto: CreateEditorDto): Promise<Editor> {
     return this.editorService.createEditor(createEditorDto);
   }
 
@@ -38,9 +38,9 @@ export class EditorController {
     return this.editorService.createReviewer(createReviewerDto);
   }
   
-  // @Public()
+  @Public()
   @Post('assign-reviewer')
-  @Role(UserType.EDITOR)  
+  // @Role(UserType.EDITOR)  
   @ApiOperation({ summary: 'Assign a reviewer to a manuscript' })
   @ApiCreatedResponse({ description: 'The reviewer has been successfully assigned to the manuscript.' })
   @ApiBadRequestResponse({ description: 'Invalid data provided or reviewer already assigned.' })
@@ -49,7 +49,7 @@ export class EditorController {
   }
 
 
-  // @Public()
+  @Public()
   @Role(UserType.EDITOR) 
   @Get("list-all-authors")
   @ApiOperation({ summary: 'Get all authors' })
@@ -58,24 +58,24 @@ export class EditorController {
     return this.editorService.getAllAuthors();
   }
 
-  // @Public()
-  @Role(UserType.EDITOR) 
+  @Public()
+  // @Role(UserType.EDITOR) 
   @Get('')
   @ApiOperation({ summary: 'Find all reviewers' })
   findAll() {
     return this.editorService.getAllReviewers();
   }
 
-  // @Public()
-  @Role(UserType.EDITOR) 
+  @Public()
+  // @Role(UserType.EDITOR) 
   @Get('submitted')
   @ApiOperation({ summary: 'List all submitted manuscripts' })
   async listSubmitted(): Promise<Manuscript[]> {
     return this.editorService.listSubmittedManuscripts();
   }
 
-  @Role(UserType.EDITOR)
-  // @Public()
+  // @Role(UserType.EDITOR)
+  @Public()
   @Get('assigned')
   @ApiOperation({ summary: 'Get all assigned manuscripts' })
   async getAllAssignedManuscripts() {
@@ -83,8 +83,8 @@ export class EditorController {
   }
 
   
-  // @Public()
-  @Role(UserType.EDITOR)
+  @Public()
+  // @Role(UserType.EDITOR)
   @Get('unassigned')
   @ApiOperation({ summary: 'Get all unassigned manuscripts' })
   async getAllUnassignedManuscripts() {
@@ -113,9 +113,9 @@ export class EditorController {
   async getManuscriptsByStatus(@Param('status') status: Status) {
     return this.editorService.getManuscriptsByStatus(status);
   }
-  // @Public()
+  @Public()
   @Get("stat")
-  @Role(UserType.EDITOR)
+  // @Role(UserType.EDITOR)
   async getStatistics() {
     return this.editorService.getStatistics();
   }
