@@ -82,18 +82,20 @@ export class JwtTokenService {
     }
   }
 
-  blacklist(token: string): Promise<void> {
-    // get the time when the token is supposed to expire
+  async blacklist(token: string): Promise<void> {
+    // Get the time when the token is supposed to expire
     const expirationTime = this.extractExpirationTime(token);
     const expirationTimeMs = !!expirationTime
       ? (expirationTime - Math.floor(Date.now() / MILLISECONDS_PER_SECOND)) *
         MILLISECONDS_PER_SECOND
       : ms(this.JWT_ACCESS_EXPIRY);
-
-    return this.cacheManager.set(
+  
+    // Use the expirationTimeMs directly, ensure it's a number
+    await this.cacheManager.set(
       BLACKLISTED_TOKEN + token,
       true,
-      +expirationTimeMs, // don't keep tokens forever, delete from cache when the token expires
+      Math.floor(expirationTimeMs / 1000) // Convert to seconds for TTL
     );
   }
+  
 }
