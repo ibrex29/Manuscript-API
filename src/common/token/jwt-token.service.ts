@@ -5,9 +5,9 @@ import { Cache } from 'cache-manager';
 
 import ms from 'ms';
 import { ConfigService } from '@nestjs/config';
-
-import { BLACKLISTED_TOKEN, JWT_ACCESS_EXPIRY, JWT_ACCESS_SECRET, JWT_REFRESH_EXPIRY, JWT_REFRESH_SECRET, MILLISECONDS_PER_SECOND } from '../constants';
 import { JwtPayload } from 'src/modules/auth/types';
+import { JWT_ACCESS_SECRET, JWT_ACCESS_EXPIRY, JWT_REFRESH_SECRET, JWT_REFRESH_EXPIRY, BLACKLISTED_TOKEN, MILLISECONDS_PER_SECOND } from '../constants';
+
 
 @Injectable()
 export class JwtTokenService {
