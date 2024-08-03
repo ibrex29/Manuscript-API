@@ -31,4 +31,9 @@ export class CreateManuscriptDto {
   @IsString()
   @IsNotEmpty()
   proofofPayment: string;
+
+  @ApiProperty({ example: 'https://example.com/otherDocsLink.pdf', description: 'Link to locate the other Docs  e. latex or formular' })
+  @IsString()
+  @IsNotEmpty()
+  otherDocsLink : string;
 }

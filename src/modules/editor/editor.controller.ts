@@ -8,8 +8,8 @@ import { AssignReviewerDto } from './dtos/assign-reviewer.dto';
 import { UserType } from '../user/types/user.type';
 import { RolesGuard } from '../auth/guard/role.guard';
 import { AssignRoleByNameDto } from './dtos/assign-role-by-name.dto';
-import { PublishManuscriptDto } from './dtos/publish-manuscript.dto';
-import { CreateReviewerDto } from '../reviewer/dto/create-reviewer.dto';
+// import { PublishManuscriptDto } from './dtos/publish-manuscript.dto';
+import { CreateReviewerDto } from '../user/dtos/create-reviewer.dto';
 
 
 @ApiBearerAuth() 
@@ -19,38 +19,29 @@ import { CreateReviewerDto } from '../reviewer/dto/create-reviewer.dto';
 export class EditorController {
   constructor(private editorService: EditorService) {}
 
-  @Public()
-  @Post("editor")
-  @HttpCode(HttpStatus.CREATED)
-  @ApiOperation({ summary: 'Create a new editor' })
-  @ApiCreatedResponse({ description: 'The editor has been successfully created.' })
-  @ApiBadRequestResponse({ description: 'Invalid data provided.' })
-  @ApiBody({ type: CreateEditorDto })
-  async createeditor(@Body() createEditorDto: CreateEditorDto): Promise<Editor> {
-    return this.editorService.createEditor(createEditorDto);
-  }
+  // @Public()
+  // @Post("editor")
+  // @HttpCode(HttpStatus.CREATED)
+  // @ApiOperation({ summary: 'Create a new editor' })
+  // @ApiCreatedResponse({ description: 'The editor has been successfully created.' })
+  // @ApiBadRequestResponse({ description: 'Invalid data provided.' })
+  // @ApiBody({ type: CreateEditorDto })
+  // async createeditor(@Body() createEditorDto: CreateEditorDto): Promise<Editor> {
+  //   return this.editorService.createEditor(createEditorDto);
+  // }
 
-  @Role(UserType.EDITOR)
-  @Post("reviewer")
-  @HttpCode(HttpStatus.CREATED)
-  @ApiOperation({ summary: 'Create a new reviewer' })
-  create(@Body() createReviewerDto: CreateReviewerDto) {
-    return this.editorService.createReviewer(createReviewerDto);
-  }
+  // @Role(UserType.EDITOR)
+  // @Post("user")
+  // @HttpCode(HttpStatus.CREATED)
+  // @ApiOperation({ summary: 'Create a new reviewer' })
+  // create(@Body() createReviewerDto: CreateReviewerDto) {
+  //   return this.editorService.createReviewer(createReviewerDto);
+  // }
   
-  @Public()
-  @Post('assign-reviewer')
-  // @Role(UserType.EDITOR)  
-  @ApiOperation({ summary: 'Assign a reviewer to a manuscript' })
-  @ApiCreatedResponse({ description: 'The reviewer has been successfully assigned to the manuscript.' })
-  @ApiBadRequestResponse({ description: 'Invalid data provided or reviewer already assigned.' })
-  async assignReviewer(@Body() assignReviewerDto: AssignReviewerDto) {
-    return this.editorService.assignManuscriptToReviewer(assignReviewerDto);
-  }
-
+  
 
   @Public()
-  @Role(UserType.EDITOR) 
+  @Role(UserType.EDITOR_IN_CHIEF) 
   @Get("list-all-authors")
   @ApiOperation({ summary: 'Get all authors' })
   @ApiOkResponse({ description: 'The list of authors has been successfully retrieved.' })
@@ -66,53 +57,7 @@ export class EditorController {
     return this.editorService.getAllReviewers();
   }
 
-  @Public()
-  // @Role(UserType.EDITOR) 
-  @Get('submitted')
-  @ApiOperation({ summary: 'List all submitted manuscripts' })
-  async listSubmitted(): Promise<Manuscript[]> {
-    return this.editorService.listSubmittedManuscripts();
-  }
-
-  // @Role(UserType.EDITOR)
-  @Public()
-  @Get('assigned')
-  @ApiOperation({ summary: 'Get all assigned manuscripts' })
-  async getAllAssignedManuscripts() {
-    return this.editorService.getAllAssignedManuscripts();
-  }
-
-  
-  @Public()
-  // @Role(UserType.EDITOR)
-  @Get('unassigned')
-  @ApiOperation({ summary: 'Get all unassigned manuscripts' })
-  async getAllUnassignedManuscripts() {
-    return this.editorService.getAllUnassignedManuscripts();
-  }
-
-  @Get(':manuscriptId/details')
-  @Role(UserType.EDITOR)
-  @ApiOperation({ summary: 'Get manuscript details with author, assigned reviewer, and reviews' })
-  async getManuscriptDetails(@Param('manuscriptId') manuscriptId: string) {
-    return this.editorService.getManuscriptDetails(manuscriptId);
-  }
-  
-  // @Public()
-  @Get('status/:status')
-  @Role(UserType.EDITOR)
-  @ApiOperation({ summary: 'Get manuscripts by status' })
-  @ApiResponse({
-    status: 200,
-    description: 'Manuscripts retrieved successfully.',
-  })
-  @ApiResponse({
-    status: 401,
-    description: 'Unauthorized.',
-  })
-  async getManuscriptsByStatus(@Param('status') status: Status) {
-    return this.editorService.getManuscriptsByStatus(status);
-  }
+ 
   @Public()
   @Get("stat")
   // @Role(UserType.EDITOR)
@@ -122,7 +67,7 @@ export class EditorController {
 
 
   @Post('assign-role-by-name')
-  @Role(UserType.EDITOR)
+  @Role(UserType.EDITOR_IN_CHIEF)
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Assign a role to a user by role name' })
   @ApiCreatedResponse({ description: 'The role has been successfully assigned to the user.' })
@@ -138,21 +83,4 @@ export class EditorController {
   }
 
 
-  @Post('publish')
-  @Role(UserType.EDITOR)  
-  @ApiOperation({ summary: 'Publish a manuscript' })
-  @ApiResponse({ status: 200, description: 'Manuscript published successfully.' })
-  @ApiResponse({ status: 400, description: 'Invalid input data or manuscript status not ACCEPTED.' })
-  async publishManuscript(
-  @Request() req,
-  @Body() publishManuscriptDto: PublishManuscriptDto) {
-    return this.editorService.publishManuscript(publishManuscriptDto, req.user?.userId);
-  }
-
-  @Public()
-  @Get('manuscripts/published')
-  async getAllPublishedManuscripts() {
-    return this.editorService.getAllPublishedManuscripts();
-  }
-  
 }

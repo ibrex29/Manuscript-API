@@ -38,20 +38,6 @@ export class AuthorController {
   }
 
 
-  @Role(UserType.AUTHOR)
-  @Get('review-message')
-  @ApiOperation({ summary: 'Get reviews for manuscripts submitted by the logged-in author' })
-  @ApiResponse({
-    status: 200,
-    description: 'Reviews retrieved successfully.',
-  })
-  @ApiResponse({
-    status: 401,
-    description: 'Unauthorized.',
-  })
-  async getReviewsByAuthor(@Request() req): Promise<Review[]> {
-    return this.authorService.getReviewsByAuthor(req.user.userId);
-  }
 
   // @Get(':id')
   // @ApiOperation({ summary: 'Get author by ID' })
@@ -92,15 +78,7 @@ export class AuthorController {
   // }
 
 
-  
-  @Post("reply")
-  @ApiOperation({ summary: 'Create a reply to a review' })
-  @ApiResponse({ status: 201, description: 'Reply created successfully' })
-  async createReply(
-    @Request() req,
-    @Body() createReplyDto: CreateReplyDto) {
-    return this.authorService.createReply(req.user?.userId, createReplyDto);
-  }
+
 
  @Role(UserType.AUTHOR)
   @Get('status-counts')

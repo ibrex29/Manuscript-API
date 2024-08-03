@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsUUID } from 'class-validator';
+import { IsDateString, IsOptional, IsUUID } from 'class-validator';
 
 export class AssignReviewerDto {
   @ApiProperty({
@@ -15,4 +15,13 @@ export class AssignReviewerDto {
   })
   @IsUUID()
   reviewerId: string;
+  
+  @ApiProperty({
+    description: 'The due date for the review',
+    example: '2024-12-31T23:59:59.999Z',
+    required: false,
+  })
+  @IsOptional()
+  @IsDateString()
+  reviewDueDate?: Date;
 }

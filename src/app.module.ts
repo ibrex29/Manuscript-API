@@ -13,10 +13,11 @@ import { HttpModule } from '@nestjs/axios';
 import { CacheConfigModule } from './cache.module'; // Ensure this module is correctly defined
 import { UserModule } from './modules/user/user.module';
 import { ManuscriptModule } from './modules/manuscript/manuscript.module';
-import { ReviewerModule } from './modules/reviewer/reviewer.module';
+import { ReviewModule } from './modules/review/review.module';
 import { EditorModule } from './modules/editor/editor.module';
 import { AuthorModule } from './modules/author/author.module';
-import { TurnstileModule } from './modules/turnstile/turnstile.module';
+import { ReplyModule } from './modules/reply/reply.module';
+import { SectionModule } from './modules/section/section.module';
 
 @Module({
   imports: [
@@ -55,9 +56,11 @@ import { TurnstileModule } from './modules/turnstile/turnstile.module';
     EditorModule,
     UserModule,
     ManuscriptModule,
-    ReviewerModule,
-    TurnstileModule,
-   
+    ReviewModule,
+    ReplyModule,
+    UserModule,
+    SectionModule
+    
 
   ],
   controllers: [AppController],

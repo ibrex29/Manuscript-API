@@ -8,19 +8,19 @@ datasource db {
 }
 
 model User {
-  id        String       @id @default(uuid())
-  firstName String
-  lastName  String
-  password  String
-  email     String      @unique
-  createdAt DateTime    @default(now())
-  updatedAt DateTime    @updatedAt
-  createdBy String
-  updatedBy String
-  Author    Author?
-  Editor    Editor?
-  Reviewer  Reviewer?
-  roles     Role[]      @relation("UserRoles")
+  id          String       @id @default(uuid())
+  firstName   String
+  lastName    String
+  password    String
+  email       String      @unique
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  createdBy   String
+  updatedBy   String
+  Author      Author?
+  Editor      Editor?
+  Reviewer    Reviewer?
+  roles       Role[]      @relation("UserRoles")
   publications Publication[]
 }
 
@@ -36,10 +36,12 @@ model Author {
 }
 
 model Editor {
-  id     String @id @default(uuid())
-  userId String @unique
-  User   User   @relation(fields: [userId], references: [id])
-  
+  id        String     @id @default(uuid())
+  userId    String     @unique
+  User      User       @relation(fields: [userId], references: [id])
+  sectionId     String?
+  Section       Section?  @relation("SectionEditors", fields: [sectionId], references: [id]) 
+  role      EditorRole
 }
 
 model Reviewer {
@@ -48,7 +50,17 @@ model Reviewer {
   expertiseArea String
   Manuscript    Manuscript[]
   Review        Review[]
+  sectionId     String 
+  Section       Section?  @relation("SectionReviewer", fields: [sectionId], references: [id]) 
   User          User         @relation(fields: [userId], references: [id])
+}
+
+model Section {
+  id          String      @id @default(uuid())
+  name        String      
+  manuscripts Manuscript[] @relation("SectionManuscripts") 
+  reviewers   Reviewer[]  @relation("SectionReviewer") 
+  editors     Editor[]    @relation("SectionEditors") 
 }
 
 model Manuscript {
@@ -65,15 +77,21 @@ model Manuscript {
   updatedBy         String
   manuscriptLink    String
   proofofPayment    String
+  otherDocsLink     String?
   isPublished       Boolean
-  assigmentDate     DateTime?  @default(now())
-  reviewDueDate     DateTime?
+  assigmentDate  DateTime? @default(now())
+  reviewDueDate  DateTime?
   reviewerId        String?
   Author            Author    @relation(fields: [authorId], references: [id])
   Reviewer          Reviewer? @relation(fields: [reviewerId], references: [id])
   Review            Review[]
   Publication       Publication[]
-
+  sectionId         String?   
+  Section           Section?  @relation("SectionManuscripts", fields: [sectionId], references: [id]) 
+  
+  @@index([status])
+  @@index([authorId])
+  @@index([sectionId])
 }
 
 model Review {
@@ -102,39 +120,36 @@ model Reply {
   Review      Review   @relation(fields: [reviewId], references: [id])
 }
 
-model Publication{
-  id          String   @id @default(uuid())
-  title       String
-  abstract    String
-  keywords    String
-  userId  String?
+model Publication {
+  id                 String   @id @default(uuid())
+  title              String
+  abstract           String
+  keywords           String
+  userId             String?
   formartedManuscript String
-  editor    User?  @relation(fields: [userId], references: [id])
-  manuscriptId  String
-   Manuscript          Manuscript @relation(fields: [manuscriptId], references: [id])
-
+  editor             User?  @relation(fields: [userId], references: [id])
+  manuscriptId       String
+  Manuscript         Manuscript @relation(fields: [manuscriptId], references: [id])
 }
 
 model Permission {
-  id        String   @id @default(uuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  permissionName String  @unique
-  isActive       Boolean @default(true)
-  createdBy      String
-  updatedBy      String
-  role           Role[]  @relation("RolePermissions")
+  id              String   @id @default(uuid())
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  permissionName  String   @unique
+  isActive        Boolean  @default(true)
+  createdBy       String
+  updatedBy       String
+  role            Role[]   @relation("RolePermissions")
 }
 
 model Role {
   id          String       @id @default(uuid())
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
-
   roleName    String       @unique
   description String?
   isActive    Boolean      @default(true)
-
   user        User[]       @relation("UserRoles")
   permissions Permission[] @relation("RolePermissions")
   createdBy   String
@@ -162,4 +177,13 @@ enum Status {
   ACCEPTED
   REJECTED
   PUBLISHED
+}
+
+enum EditorRole {
+  EDITOR_IN_CHIEF 
+  MANAGING_EDITOR
+  SECTION_EDITOR
+  ASSOCIATE_EDITOR
+  PRODUCTION_EDITOR
+  COPY_EDITOR
 }
