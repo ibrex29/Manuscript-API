@@ -46,6 +46,14 @@ export class JwtTokenService {
     );
   }
 
+  async validateToken(token: string): Promise<any> {
+    try {
+      return this.jwtService.verify(token);
+    } catch (error) {
+      return null; // Token is invalid or expired
+    }
+  }
+
   async verifyAccessToken(token: string): Promise<JwtPayload> {
     return this.jwtService.verifyAsync(token, {
       secret: this.JWT_ACCESS_SECRET,
