@@ -60,25 +60,25 @@ export class PublicationService {
     //   }
       
 
-async getAllPublishedManuscripts() {
-    const publishedManuscripts = await this.prisma.publication.findMany({
-      where: {
-        Manuscript: {
-          status: 'PUBLISHED',
-        },
-      },
-      select: {
-        id: true,
-        title: true,
-        abstract: true,
-        keywords: true,
-        userId: true,
-        formattedManuscript: true,
-        manuscriptId: true,
-      },
-    });
+// async getAllPublishedManuscripts() {
+//     const publishedManuscripts = await this.prisma.publication.findMany({
+//       where: {
+//         Manuscript: {
+//           status: 'PUBLISHED',
+//         },
+//       },
+//       select: {
+//         id: true,
+//         title: true,
+//         abstract: true,
+//         keywords: true,
+//         userId: true,
+//         formattedManuscript: true,
+//         manuscriptId: true,
+//       },
+//     });
   
-    return publishedManuscripts;
-  }
+//     return publishedManuscripts;
+//   }
   
 }

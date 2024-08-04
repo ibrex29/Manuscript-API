@@ -38,14 +38,14 @@ export class PublicationController {
   //   return this.publicationService.publishManuscript(publishManuscriptDto, req.user?.userId);
   // }
 
-  @Public()
-  @ApiOperation({ summary: 'list of Published manuscripts ' })
-  @ApiResponse({
-    status: 200,
-    description: 'Published Manuscripts retreived successfully.',
-  })
-  @Get('manuscripts/published')
-  async getAllPublishedManuscripts() {
-    return this.publicationService.getAllPublishedManuscripts();
-  }
+  // @Public()
+  // @ApiOperation({ summary: 'list of Published manuscripts ' })
+  // @ApiResponse({
+  //   status: 200,
+  //   description: 'Published Manuscripts retreived successfully.',
+  // })
+  // @Get('manuscripts/published')
+  // async getAllPublishedManuscripts() {
+  //   return this.publicationService.getAllPublishedManuscripts();
+  // }
 }
