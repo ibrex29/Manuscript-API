@@ -51,7 +51,7 @@ export class PublicationService {
             volume:volume,
             DOI:doi,
             userId: userId,
-            formartedManuscript: formattedManuscript ,
+            formattedManuscript: formattedManuscript ,
             manuscriptId: manuscriptId
           }
         });
@@ -73,7 +73,7 @@ async getAllPublishedManuscripts() {
         abstract: true,
         keywords: true,
         userId: true,
-        formartedManuscript: true,
+        formattedManuscript: true,
         manuscriptId: true,
       },
     });
