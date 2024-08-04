@@ -35,11 +35,40 @@ export class PublishManuscriptDto {
   keywords: string;
 
   @ApiProperty({
+    example: '1',
+    description: 'The issue number of the manuscript',
+    required: true,
+  })
+  @IsNotEmpty()
+  @IsString()
+  issue: string;
+
+  @ApiProperty({
+    example: '14',
+    description: 'The volume number of the manuscript',
+    required: true,
+  })
+  @IsNotEmpty()
+  @IsString()
+  volume: string;
+
+  
+  @ApiProperty({
+    example: 'https://doi.org/10.56471/slujst.v7i.486',
+    description: 'The Digital Object Identifier (DOI) of the manuscript',
+    required: true,
+  })
+  @IsNotEmpty()
+  @IsString()
+  doi: string;
+
+
+  @ApiProperty({
     example: 'http://example.com/formatted-manuscript.pdf',
     description: 'The link to the formatted manuscript',
-    required: false,
+    required: true,
   })
-  @IsOptional()
+  @IsNotEmpty()
   @IsString()
-  formattedManuscript?: string;
+  formattedManuscript: string;
 }

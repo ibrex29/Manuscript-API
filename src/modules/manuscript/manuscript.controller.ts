@@ -9,7 +9,7 @@ import { UserType } from '../user/types/user.type';
 import { Public, Role} from 'src/common/constants/routes.constant'
 import { Manuscript, Status } from '@prisma/client';
 import { AssignReviewerDto } from './dto/assign-reviewer.dto';
-import { PublishManuscriptDto } from './dto/publish-manuscript.dto';
+import { PublishManuscriptDto } from '../publication/dto/publish-manuscript.dto';
 import { AssignManuscriptToSectionDto } from './dto/assign-manuscript-to-section.dto';
 // import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard';
 import { ManuscriptDto } from './dto/manuscript.dto';
@@ -76,7 +76,7 @@ export class ManuscriptController {
   async getReviewersForSectionEditor( @Request() req):Promise<ReviewerDto[]> {
     return this.manuscriptService.getReviewersForSectionEditor(req.user?.userId);
   }
-  
+
   @Role(UserType.SECTION_EDITOR)
   @Patch('assign-reviewer')
   @ApiOperation({ summary: 'Assign manuscript to a reviewer by section editor' })
@@ -158,27 +158,7 @@ export class ManuscriptController {
     return this.manuscriptService.getStatistics();
   }
 
-  @Post('publish')
-  @Role(UserType.EDITOR_IN_CHIEF,UserType.PRODUCTION_EDITOR)
-  @ApiOperation({ summary: 'Publish a manuscript' })
-  @ApiResponse({ status: 200, description: 'Manuscript published successfully.' })
-  @ApiResponse({ status: 400, description: 'Invalid input data or manuscript status not ACCEPTED.' })
-  async publishManuscript(
-  @Request() req,
-  @Body() publishManuscriptDto: PublishManuscriptDto) {
-    return this.manuscriptService.publishManuscript(publishManuscriptDto, req.user?.userId);
-  }
 
-  @Public()
-  @ApiOperation({ summary: 'list of Published manuscripts ' })
-  @ApiResponse({
-    status: 200,
-    description: 'Published Manuscripts retreived  successfully.',
-  })
-  @Get('manuscripts/published')
-  async getAllPublishedManuscripts() {
-    return this.manuscriptService.getAllPublishedManuscripts();
-  }
 
 
 }

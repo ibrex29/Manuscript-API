@@ -3,7 +3,7 @@ import { CreateManuscriptDto } from './dto/create-manuscript.dto';
 import { Manuscript, Review, Status } from '@prisma/client';
 import { PrismaService } from 'prisma/prisma.service';
 import { AssignReviewerDto } from './dto/assign-reviewer.dto';
-import { PublishManuscriptDto } from './dto/publish-manuscript.dto';
+import { PublishManuscriptDto } from '../publication/dto/publish-manuscript.dto';
 import { AssignManuscriptToSectionDto } from './dto/assign-manuscript-to-section.dto';
 import { ManuscriptDto } from './dto/manuscript.dto';
 import { Reviewer } from '../review/entities/reviewer.entity';
@@ -340,47 +340,6 @@ async getStatistics() {
   };
 }
 
-
-async publishManuscript(publishManuscriptDto: PublishManuscriptDto, userId: string) {
-  const { manuscriptId, title, abstract, keywords, formattedManuscript } = publishManuscriptDto;
-  
-  // Fetch the manuscript to check its status
-  const manuscript = await this.prisma.manuscript.findUnique({
-    where: { id: manuscriptId }
-  });
-
-  if (!manuscript) {
-    throw new BadRequestException('Manuscript not found');
-  }
-
-  if (manuscript.status !== 'ACCEPTED') {
-    throw new BadRequestException('Manuscript status must be ACCEPTED By reviewer to be published');
-  }
-
-  // Update manuscript status to published
-  const updatedManuscript = await this.prisma.manuscript.update({
-    where: { id: manuscriptId },
-    data: {
-      status: 'PUBLISHED',
-      isPublished: true,
-      updatedAt: new Date(),
-      updatedBy: userId
-    }
-  });
-
-  await this.prisma.publication.create({
-    data: {
-      title: title,
-      abstract: abstract,
-      keywords: keywords,
-      userId: userId,
-      formartedManuscript: formattedManuscript ,
-      manuscriptId: manuscriptId
-    }
-  });
-
-  return updatedManuscript;
-}
 
 
 async getAllPublishedManuscripts() {
