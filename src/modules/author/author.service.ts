@@ -5,7 +5,6 @@ import { Prisma, Author, Reply, Review } from '@prisma/client';
 import { PrismaService } from 'prisma/prisma.service';
 import { CreateAuthorDto } from './dtos/create-author.dto';
 import * as bcrypt from 'bcrypt';
-import { CreateReplyDto } from './dtos/create-reply.dto';
 import { UserType } from '../user/types/user.type';
 
 @Injectable()
@@ -14,7 +13,7 @@ export class AuthorService {
 
  
   async createAuthor(createAuthorDto: CreateAuthorDto) {
-    const { email, firstName, lastName, password, affiliation, expertiseArea } = createAuthorDto;
+    const { title,email, firstName, lastName, password, affiliation, expertiseArea } = createAuthorDto;
 
     // Find the author role
     const roleName = await this.prisma.role.findUnique({
@@ -40,6 +39,7 @@ export class AuthorService {
     // Create the user and author profile
     const createdUser = await this.prisma.user.create({
       data: {
+        title,
         email,
         firstName,
         lastName,
@@ -47,7 +47,7 @@ export class AuthorService {
         createdBy: "",
         updatedBy: " ",
         roles: {
-          connect: { id: roleName.id }, // Connect user to the author role
+          connect: { id: roleName.id }, 
         },
       },
     });

@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsNotEmpty, IsEnum } from 'class-validator';
+import { IsString, IsNotEmpty, IsEnum, IsOptional } from 'class-validator';
 
 
 export class CreateManuscriptDto {
@@ -18,6 +18,16 @@ export class CreateManuscriptDto {
   @IsNotEmpty()
   keywords: string;
 
+  @ApiProperty({ example: 'Nasir Faruk', description: 'author of the manuscript' })
+  @IsString()
+  @IsOptional()
+  author?: string;
+
+  @ApiProperty({ example: 'Nasir Faruk,Salisu Garba', description: 'co author for the manuscript' })
+  @IsString()
+  @IsOptional()
+  coAuthors?: string;
+
   @ApiProperty({ example: 'Prof Nasir', description: 'If you have any suggestion on who to review your manuscript' })
   @IsString()
   suggestedReviewer: string;
@@ -34,6 +44,6 @@ export class CreateManuscriptDto {
 
   @ApiProperty({ example: 'https://example.com/otherDocsLink.pdf', description: 'Link to locate the other Docs  e. latex or formular' })
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   otherDocsLink : string;
 }

@@ -9,6 +9,7 @@ datasource db {
 
 model User {
   id          String       @id @default(uuid())
+  title       String?
   firstName   String
   lastName    String
   password    String
@@ -68,6 +69,8 @@ model Manuscript {
   title             String
   abstract          String
   keywords          String
+  author            String?
+  coAuthor          String?
   status            Status
   authorId          String
   createdAt         DateTime  @default(now())

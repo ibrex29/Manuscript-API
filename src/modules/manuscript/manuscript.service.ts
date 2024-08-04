@@ -20,7 +20,7 @@ export class ManuscriptService {
     ): Promise<Manuscript> {
       const { title, abstract, keywords, 
               suggestedReviewer, manuscriptLink,
-               proofofPayment,otherDocsLink } = createManuscriptDto;
+               proofofPayment,otherDocsLink,author,coAuthors } = createManuscriptDto;
 
       try {
         // Check if the user exists and is an author
@@ -42,6 +42,9 @@ export class ManuscriptService {
             title,
             abstract,
             keywords,
+            coAuthor: coAuthors || '',
+            author: author || '',
+            // coAuthors,
             suggestedReviewer,
             manuscriptLink,
             proofofPayment,

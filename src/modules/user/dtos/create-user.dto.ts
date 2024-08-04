@@ -6,8 +6,22 @@ import { Role } from '@prisma/client'; // Assuming you have a Role enum in your 
 import { UserType } from '../types/user.type';
 // import {Role } from 'src/common/constants/routes.constant';
 
+
+enum Title {
+  Mr = 'Mr',
+  Mrs = 'Mrs',
+  Miss = 'Miss',
+  Dr = 'Dr',
+  Prof = 'Prof'
+}
+
 export class CreateUserDto {
 
+  @ApiProperty({ example: 'Mr', description: 'The title of the author', enum: Title })
+  @IsOptional()
+  @IsEnum(Title, { message: 'Invalid title. Available titles are Mr, Mrs, Miss, Dr, Prof' })
+  title?: Title;
+  
   @ApiProperty({ example: 'john.doe@example.com', description: 'The email address of the author' })
   @IsNotEmpty()
   @IsEmail()

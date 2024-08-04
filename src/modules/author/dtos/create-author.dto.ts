@@ -1,9 +1,20 @@
-// src/module/author/dto/create-author.dto.ts
-
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsEmail, isStrongPassword, IsString, MinLength, Matches } from 'class-validator';
+import { IsNotEmpty, IsEmail, IsString, MinLength, Matches, IsEnum, IsOptional } from 'class-validator';
+
+enum Title {
+  Mr = 'Mr',
+  Mrs = 'Mrs',
+  Miss = 'Miss',
+  Dr = 'Dr',
+  Prof = 'Prof'
+}
 
 export class CreateAuthorDto {
+
+  @ApiProperty({ example: 'Mr', description: 'The title of the author', enum: Title })
+  @IsOptional()
+  @IsEnum(Title, { message: 'Invalid title. Available titles are Mr, Mrs, Miss, Dr, Prof' })
+  title?: Title;
 
   @ApiProperty({ example: 'John', description: 'The first name of the author' })
   @IsNotEmpty()
@@ -25,13 +36,13 @@ export class CreateAuthorDto {
   @Matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/, {
     message: 'Password too weak. Must contain at least one uppercase letter, one lowercase letter, and one number.',
   })
-  password : string;
+  password: string;
 
   @ApiProperty({ example: 'University of Example', description: 'The affiliation of the author' })
   @IsNotEmpty()
   affiliation: string;
 
-  @ApiProperty({ example: 'University of Example', description: 'The affiliation of the author' })
+  @ApiProperty({ example: 'Artificial Intelligence', description: 'The expertise area of the author' })
   @IsNotEmpty()
   expertiseArea: string;
   
