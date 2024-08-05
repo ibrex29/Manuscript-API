@@ -355,7 +355,7 @@ async getAllPublishedManuscripts() {
       abstract: true,
       keywords: true,
       userId: true,
-      // formattedManuscript: true,
+      formattedManuscript: true,
       manuscriptId: true,
     },
   });

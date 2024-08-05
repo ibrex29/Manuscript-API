@@ -27,25 +27,25 @@ export class PublicationController {
     return this.publicationService.getAcceptedManuscripts();
   }
 
-  // @Post('publish')
-  // @Role(UserType.EDITOR_IN_CHIEF,UserType.PRODUCTION_EDITOR)
-  // @ApiOperation({ summary: 'Publish a manuscript' })
-  // @ApiResponse({ status: 200, description: 'Manuscript published successfully.' })
-  // @ApiResponse({ status: 400, description: 'Invalid input data or manuscript status not ACCEPTED.' })
-  // async publishManuscript(
-  // @Request() req,
-  // @Body() publishManuscriptDto: PublishManuscriptDto) {
-  //   return this.publicationService.publishManuscript(publishManuscriptDto, req.user?.userId);
-  // }
+  @Post('publish')
+  @Role(UserType.EDITOR_IN_CHIEF,UserType.PRODUCTION_EDITOR)
+  @ApiOperation({ summary: 'Publish a manuscript' })
+  @ApiResponse({ status: 200, description: 'Manuscript published successfully.' })
+  @ApiResponse({ status: 400, description: 'Invalid input data or manuscript status not ACCEPTED.' })
+  async publishManuscript(
+  @Request() req,
+  @Body() publishManuscriptDto: PublishManuscriptDto) {
+    return this.publicationService.publishManuscript(publishManuscriptDto, req.user?.userId);
+  }
 
-  // @Public()
-  // @ApiOperation({ summary: 'list of Published manuscripts ' })
-  // @ApiResponse({
-  //   status: 200,
-  //   description: 'Published Manuscripts retreived successfully.',
-  // })
-  // @Get('manuscripts/published')
-  // async getAllPublishedManuscripts() {
-  //   return this.publicationService.getAllPublishedManuscripts();
-  // }
+  @Public()
+  @ApiOperation({ summary: 'list of Published manuscripts ' })
+  @ApiResponse({
+    status: 200,
+    description: 'Published Manuscripts retreived successfully.',
+  })
+  @Get('manuscripts/published')
+  async getAllPublishedManuscripts() {
+    return this.publicationService.getAllPublishedManuscripts();
+  }
 }
