@@ -12,7 +12,6 @@ import { Manuscript } from '@prisma/client';
 @ApiBearerAuth()
 @ApiTags('publication')
 @UseGuards(RolesGuard)
-@Public()
 @Controller({ path: 'publication', version: '1' })
 @Controller('publication')
 export class PublicationController {
