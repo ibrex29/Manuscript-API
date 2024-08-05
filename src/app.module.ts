@@ -18,6 +18,7 @@ import { EditorModule } from './modules/editor/editor.module';
 import { AuthorModule } from './modules/author/author.module';
 import { ReplyModule } from './modules/reply/reply.module';
 import { SectionModule } from './modules/section/section.module';
+import { PublicationModule } from './modules/publication/publication.module';
 
 @Module({
   imports: [
@@ -59,7 +60,8 @@ import { SectionModule } from './modules/section/section.module';
     ReviewModule,
     ReplyModule,
     UserModule,
-    SectionModule
+    SectionModule,
+    PublicationModule
     
 
   ],

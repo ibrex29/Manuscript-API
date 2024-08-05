@@ -128,12 +128,16 @@ model Publication {
   title              String
   abstract           String
   keywords           String
+  issue              String
+  volume             String
+  DOI                String
   userId             String?
-  formartedManuscript String
-  editor             User?  @relation(fields: [userId], references: [id])
+  formattedManuscript String   // Corrected typo here
+  editor             User?     @relation(fields: [userId], references: [id])
   manuscriptId       String
   Manuscript         Manuscript @relation(fields: [manuscriptId], references: [id])
 }
+
 
 model Permission {
   id              String   @id @default(uuid())
